@@ -6,7 +6,6 @@
   <title>小五科學探究：糖的分量對酵母發酵的影響</title>
   <style>
     :root {
-      --bg-wood: #e6ccb2;
       --bg-panel: #fffdf9;
       --border-wood: #b08968;
       --primary: #2b6cb0;
@@ -37,11 +36,10 @@
     }
 
     .container {
-      max-width: 1040px;
-      margin: 0 auto;
+      max-width: 1020px;
+      margin: 0 auto 40px auto;
     }
 
-    /* 頂部標題列 */
     header {
       background: var(--bg-panel);
       border: 2px solid var(--border-wood);
@@ -57,14 +55,36 @@
     }
 
     header h1 {
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       color: #1a365d;
     }
 
-    .top-controls {
+    .progress-bar {
       display: flex;
-      gap: 10px;
-      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    .prog-pill {
+      font-size: 0.8rem;
+      padding: 3px 10px;
+      border-radius: 14px;
+      background: #edf2f7;
+      color: #718096;
+      font-weight: bold;
+    }
+
+    .prog-pill.active {
+      background: #ebf8ff;
+      color: #2b6cb0;
+      border: 1px solid #90cdf4;
+    }
+
+    .prog-pill.done {
+      background: #f0fff4;
+      color: #2f855a;
+      border: 1px solid #9ae6b4;
     }
 
     button {
@@ -74,7 +94,7 @@
       border: none;
       border-radius: 8px;
       padding: 8px 14px;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       transition: all 0.2s;
     }
 
@@ -88,23 +108,27 @@
     .btn-accent { background: var(--accent); color: #fff; }
     .btn-success { background: var(--success); color: #fff; }
     .btn-outline { background: #fff; color: var(--text-main); border: 1.5px solid #cbd5e0; }
+    .btn-outline:hover:not(:disabled) { background: #edf2f7; }
 
-    /* 階段步驟面板通用樣式 */
+    /* 每個階段預設隱藏，完成前一部分才出現 */
     .step-section {
+      display: none;
       background: var(--bg-panel);
       border: 2px solid var(--border-wood);
       border-radius: 12px;
       padding: 20px;
-      margin-bottom: 18px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      transition: all 0.3s ease;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 14px rgba(0,0,0,0.06);
+      animation: fadeIn 0.4s ease;
     }
 
-    .step-section.locked {
-      opacity: 0.45;
-      pointer-events: none;
-      filter: grayscale(40%);
-      border-color: #cbd5e0;
+    .step-section.visible {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .step-header {
@@ -120,9 +144,6 @@
       font-size: 1.15rem;
       color: #1a365d;
       font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
     .step-badge {
@@ -132,115 +153,117 @@
       padding: 3px 10px;
       border-radius: 12px;
       border: 1px solid #90cdf4;
-    }
-
-    /* 學生輸入與文字回饋框 */
-    .input-group {
-      margin-top: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .input-group label {
       font-weight: bold;
-      font-size: 0.92rem;
-      color: #2d3748;
     }
 
-    textarea, input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      border: 1.5px solid #cbd5e0;
-      border-radius: 8px;
-      font-family: inherit;
-      font-size: 0.92rem;
-      resize: vertical;
-      background: #fff;
-    }
-
-    textarea:focus, input[type="text"]:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.15);
-    }
-
-    .feedback-box {
-      margin-top: 10px;
-      padding: 10px 12px;
-      border-radius: 8px;
-      font-size: 0.88rem;
-      display: none;
-    }
-    .feedback-box.show { display: block; }
-    .feedback-box.ok { background: #f0fff4; border-left: 4px solid #38a169; color: #22543d; }
-    .feedback-box.warn { background: #fffaf0; border-left: 4px solid #dd6b20; color: #7b341e; }
-
-    /* 步驟一：公平測試設計 */
-    .fair-test-grid {
+    /* 題目卡片與選項 */
+    .quiz-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 14px;
+      margin-top: 10px;
     }
 
-    .test-card {
-      background: #f7fafc;
+    .q-card {
+      background: #f8fafc;
       border: 1.5px solid #cbd5e0;
-      border-radius: 8px;
-      padding: 12px;
+      border-radius: 10px;
+      padding: 14px;
     }
 
-    .test-card h3 {
-      font-size: 0.95rem;
+    .q-card h3 {
+      font-size: 0.96rem;
       margin-bottom: 8px;
-      color: #2d3748;
+      color: #1a202c;
     }
 
-    .option-list {
+    .opt-list {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 7px;
     }
 
     .opt-btn {
       text-align: left;
       background: #fff;
       border: 1.5px solid #cbd5e0;
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 0.86rem;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      color: var(--text-main);
+      font-weight: normal;
     }
     .opt-btn:hover { background: #ebf8ff; border-color: #63b3ed; }
     .opt-btn.correct { background: #f0fff4; border-color: #38a169; color: #22543d; font-weight: bold; }
     .opt-btn.wrong { background: #fff5f5; border-color: #e53e3e; color: #742a2a; }
 
-    /* 步驟三：實驗木桌工作檯 */
+    /* 多項選擇題 Checkbox 樣式 */
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border: 1.5px solid #cbd5e0;
+      padding: 7px 11px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .check-item:hover { background: #ebf8ff; border-color: #63b3ed; }
+    .check-item.selected { background: #ebf8ff; border-color: #3182ce; font-weight: 600; }
+    .check-item input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .feedback-box {
+      margin-top: 10px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 0.86rem;
+      display: none;
+    }
+    .feedback-box.show { display: block; }
+    .feedback-box.ok { background: #f0fff4; border-left: 4px solid #38a169; color: #22543d; }
+    .feedback-box.warn { background: #fffaf0; border-left: 4px solid #dd6b20; color: #7b341e; }
+
+    /* 工作檯與發酵碗 */
     .workbench {
       background: linear-gradient(180deg, #f9f3eb 0%, #DFC3A5 82%, #c49a6c 82%, #a67c52 100%);
       border: 2px solid var(--border-wood);
-      border-radius: 10px;
+      border-radius: 12px;
       padding: 16px;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
 
     .bowls-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 14px;
       align-items: end;
     }
 
     .bowl-card {
-      background: rgba(255, 255, 255, 0.94);
+      background: rgba(255, 255, 255, 0.95);
       border: 2px solid #cbd5e0;
       border-radius: 10px;
       padding: 10px;
       text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .bowl-card.active-micro {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.2);
     }
 
     .bowl-title {
       font-weight: bold;
-      font-size: 0.95rem;
+      font-size: 0.94rem;
       margin-bottom: 6px;
       display: flex;
       justify-content: space-between;
@@ -248,7 +271,7 @@
     }
 
     .crown-slot {
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       padding: 2px 7px;
       border-radius: 12px;
       border: 1px dashed #d69e2e;
@@ -265,11 +288,11 @@
       gap: 6px;
       margin-bottom: 6px;
     }
-    .sugar-count { font-size: 0.98rem; font-weight: bold; color: #b45309; min-width: 60px; }
+    .sugar-count { font-size: 0.95rem; font-weight: bold; color: #b45309; min-width: 58px; }
     .btn-spoon { padding: 3px 8px; font-size: 0.8rem; background: #edf2f7; border: 1px solid #cbd5e0; }
 
     .vessel-stage {
-      height: 220px;
+      height: 215px;
       position: relative;
       display: flex;
       flex-direction: column;
@@ -289,26 +312,26 @@
     }
 
     .balloon {
-      width: 32px;
-      height: 38px;
+      width: 30px;
+      height: 36px;
       background: radial-gradient(circle at 30% 30%, #fc8181, #e53e3e);
       border-radius: 50% 50% 48% 48%;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       font-weight: bold;
+      transition: width 0.25s, height 0.25s;
     }
-
     .balloon-neck { width: 12px; height: 6px; background: #c53030; border-radius: 2px; }
 
     .cylinder {
-      width: 120px;
-      height: 150px;
+      width: 116px;
+      height: 148px;
       border: 3px solid #718096;
       border-top: 5px solid #4a5568;
-      border-radius: 6px 6px 22px 22px;
+      border-radius: 6px 6px 20px 20px;
       background: rgba(237, 242, 247, 0.55);
       position: relative;
       overflow: hidden;
@@ -320,8 +343,8 @@
     .ruler {
       position: absolute;
       right: 4px;
-      top: 10px;
-      bottom: 10px;
+      top: 8px;
+      bottom: 8px;
       width: 24px;
       display: flex;
       flex-direction: column;
@@ -329,33 +352,20 @@
       font-size: 0.6rem;
       color: #4a5568;
       text-align: right;
+      pointer-events: none;
     }
     .ruler span { border-bottom: 1px solid #a0aec0; padding-right: 2px; }
-
-    .sugar-drop {
-      position: absolute;
-      top: 10px;
-      width: 5px;
-      height: 5px;
-      background: #fff;
-      border: 1px solid #cbd5e0;
-      animation: fall 0.4s ease-in forwards;
-      z-index: 5;
-    }
-    @keyframes fall {
-      from { transform: translateY(0); opacity: 1; }
-      to { transform: translateY(100px); opacity: 0; }
-    }
 
     .dough {
       width: 100%;
       height: 40px;
       background: linear-gradient(180deg, #f6e0b5 0%, #ecc988 100%);
       border-top: 3px solid #d69e2e;
-      border-radius: 18px 18px 18px 18px;
+      border-radius: 16px 16px 18px 18px;
       position: relative;
-      transition: height 0.3s ease-out, transform 0.15s;
+      transition: height 0.25s ease-out, transform 0.15s;
       cursor: pointer;
+      overflow: hidden;
     }
     .dough.poke-soft { transform: scaleY(0.82) scaleX(1.06); }
     .dough.poke-hard { transform: scaleY(0.96); }
@@ -378,40 +388,105 @@
     .bread-slice {
       display: none;
       width: 105px;
-      height: 120px;
+      height: 125px;
       position: relative;
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
     }
     .bread-body {
-      width: 98px;
+      width: 96px;
       background: #f5deb3;
-      border: 4px solid #b7791f;
+      border: 4.5px solid #b7791f;
       border-radius: 20px 20px 6px 6px;
       position: relative;
       overflow: hidden;
     }
 
-    .bowl-footer {
-      margin-top: 6px;
-      font-size: 0.82rem;
+    /* 顯微鏡視窗 */
+    .micro-panel {
+      background: #fff;
+      border: 1.5px solid #cbd5e0;
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .micro-circle {
+      width: 135px;
+      height: 135px;
+      border-radius: 50%;
+      border: 5px solid #2d3748;
+      background: radial-gradient(circle, #fefcbf 0%, #f6e05e 100%);
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .micro-circle.flash-alert {
+      animation: ringFlash 0.6s 4;
+    }
+    @keyframes ringFlash {
+      0%, 100% { border-color: #2d3748; }
+      50% { border-color: #e53e3e; box-shadow: 0 0 16px #e53e3e; }
+    }
+
+    .yeast-cell {
+      position: absolute;
+      background: #ecc94b;
+      border: 2px solid #975a16;
+      border-radius: 50%;
+    }
+    .yeast-cell.shrunk {
+      border-radius: 38% 62% 44% 56% / 55% 36% 64% 45%;
+      transform: scale(0.75);
+      background: #d69e2e;
+    }
+    .yeast-bud {
+      position: absolute;
+      width: 11px;
+      height: 11px;
+      background: #ecc94b;
+      border: 1.5px solid #975a16;
+      border-radius: 50%;
+      right: -7px;
+      top: -4px;
+    }
+    .water-arrow {
+      position: absolute;
+      font-size: 0.68rem;
+      color: #2b6cb0;
+      font-weight: bold;
+      animation: waterOut 1s infinite;
+    }
+    @keyframes waterOut {
+      from { transform: translate(0,0); opacity: 1; }
+      to { transform: translate(14px,-10px); opacity: 0; }
+    }
+
+    /* 大型石灰水動畫框 */
+    .lime-stage-box {
+      background: #f8fafc;
+      border: 1.5px solid #cbd5e0;
+      border-radius: 10px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      align-items: center;
+      gap: 10px;
     }
-    .height-readout { font-weight: bold; color: #2b6cb0; }
-    .poke-msg { min-height: 18px; color: #744210; font-size: 0.78rem; font-weight: 600; }
 
-    /* 步驟四：筆記與溫習 */
     .notes-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 12px;
-      margin-top: 10px;
+      margin-top: 12px;
     }
-    .note-card { background: #f7fafc; border-left: 4px solid var(--primary); padding: 10px; border-radius: 6px; font-size: 0.88rem; }
-    .mistake-card { background: #fff5f5; border-left: 4px solid var(--danger); padding: 10px; border-radius: 6px; font-size: 0.88rem; }
+    .note-card { background: #f7fafc; border-left: 4px solid var(--primary); padding: 10px 12px; border-radius: 6px; font-size: 0.88rem; }
+    .mistake-card { background: #fff5f5; border-left: 4px solid var(--danger); padding: 10px 12px; border-radius: 6px; font-size: 0.88rem; }
   </style>
 </head>
 <body>
@@ -420,188 +495,365 @@
   <header>
     <div>
       <h1>🔬 小五科學探究：糖的分量對酵母發酵的影響</h1>
-      <span style="font-size:0.85rem; color:#4a5568;" id="currentStepIndicator">目前進度：階段一（實驗設計與公平測試）</span>
+      <div class="progress-bar">
+        <span class="prog-pill active" id="pill1">1. 實驗設計（公平測試）</span>
+        <span class="prog-pill" id="pill2">2. 發酵模擬與觀察</span>
+        <span class="prog-pill" id="pill3">3. 王老師氣體測試</span>
+        <span class="prog-pill" id="pill4">4. 實驗分析與總結筆記</span>
+      </div>
     </div>
-    <div class="top-controls">
-      <button class="btn-outline" onclick="toggleSound()" id="soundBtn">🔊 音效：開</button>
-      <button class="btn-outline" onclick="resetAll()">🔄 重新開始</button>
+    <div style="display:flex; gap:8px;">
+      <button class="btn-outline" id="soundBtn" onclick="toggleSound()">🔊 音效：開</button>
+      <button class="btn-outline" onclick="location.reload()">🔄 重新開始</button>
     </div>
   </header>
 
-  <!-- ==================== 階段一：實驗設計與公平測試 ==================== -->
-  <section class="step-section" id="step1Section">
+  <!-- ==================== 第一部分：實驗設計與公平測試 ==================== -->
+  <section class="step-section visible" id="step1">
     <div class="step-header">
-      <div class="step-title"><span>📝 階段一：實驗設計與公平測試</span></div>
+      <div class="step-title">📝 第一部分：實驗設計與公平測試</div>
       <span class="step-badge" id="badge1">進行中</span>
     </div>
 
-    <p style="font-size:0.92rem; margin-bottom:12px;">
-      在動手做實驗前，我們必須先確保這是一個<strong>公平測試（Fair Test）</strong>。請完成以下兩個設計挑戰：
+    <p style="font-size:0.9rem; margin-bottom:10px;">
+      王老師想與同學一起探究「糖的分量會不會影響酵母使麵糰發生的變化」。在開始實驗前，請先完成以下實驗設計問題：
     </p>
 
-    <div class="fair-test-grid">
-      <div class="test-card">
-        <h3>1. 變因選擇（獨立變因）</h3>
-        <p style="font-size:0.84rem; color:#718096; margin-bottom:6px;">在這項實驗中，我們唯一需要改變的條件（獨立變因）是什麼？</p>
-        <div class="option-list">
-          <button class="opt-btn" onclick="checkFairQ(1, this, false, '不對，水溫和酵母量在各碗中必須保持完全相同。')">A. 水溫和酵母分量</button>
-          <button class="opt-btn" onclick="checkFairQ(1, this, true, '正確！我們只改變「糖的分量」，其他條件保持一致。')">B. 糖的分量</button>
-          <button class="opt-btn" onclick="checkFairQ(1, this, false, '不對，麵粉分量是控制變因，不能改變。')">C. 麵粉分量</button>
+    <div class="quiz-grid">
+      <!-- 第 1 題：單選 -->
+      <div class="q-card">
+        <h3>1. 此實驗想探究甚麼因素？</h3>
+        <p style="font-size:0.82rem; color:#718096; margin-bottom:8px;">（請選擇一項）</p>
+        <div class="opt-list">
+          <button class="opt-btn" onclick="checkStep1Q1(this, false, '每碗的水溫都固定是 35°C，不是今次想探究的因素。')">
+            A. 水的溫度
+          </button>
+          <button class="opt-btn" onclick="checkStep1Q1(this, true, '正確！今次實驗唯一改變並想探究的因素是「糖的分量」。')">
+            B. 糖的分量
+          </button>
+          <button class="opt-btn" onclick="checkStep1Q1(this, false, '每碗的酵母分量都固定是 3g，不是今次想探究的因素。')">
+            C. 酵母的分量
+          </button>
+          <button class="opt-btn" onclick="checkStep1Q1(this, false, '每碗的麵粉分量都固定是 100g，不是今次想探究的因素。')">
+            D. 麵粉的分量
+          </button>
         </div>
-        <div class="feedback-box" id="fairHint1"></div>
+        <div class="feedback-box" id="s1q1Feedback"></div>
       </div>
 
-      <div class="test-card">
-        <h3>2. 控制變因（保持不變）</h3>
-        <p style="font-size:0.84rem; color:#718096; margin-bottom:6px;">為了公平，以下哪一項<strong>必須保持不變</strong>？</p>
-        <div class="option-list">
-          <button class="opt-btn" onclick="checkFairQ(2, this, true, '正確！麵粉量、水量、水溫及酵母量都必須保持不變。')">A. 麵粉、水、酵母及水溫</button>
-          <button class="opt-btn" onclick="checkFairQ(2, this, false, '再想想：如果每碗水量不同，發酵情況就會受影響。')">B. 每一碗的水量可以隨意加</button>
-          <button class="opt-btn" onclick="checkFairQ(2, this, false, '再想想：酵母分量不同會令產氣速度出錯。')">C. 每一碗的酵母分量要不同</button>
+      <!-- 第 2 題：多項選擇題 (Checkboxes) -->
+      <div class="q-card">
+        <h3>2. 為了公平，以下哪一項必須保持不變？（可選多項）</h3>
+        <p style="font-size:0.82rem; color:#718096; margin-bottom:8px;">請勾選所有正確的項目，然後按「核對答案」：</p>
+        <div class="opt-list" id="s1q2List">
+          <label class="check-item" onclick="toggleCheckStyle(this)">
+            <input type="checkbox" value="flour" /> 麵粉的分量 (100g)
+          </label>
+          <label class="check-item" onclick="toggleCheckStyle(this)">
+            <input type="checkbox" value="sugar" /> 糖的分量
+          </label>
+          <label class="check-item" onclick="toggleCheckStyle(this)">
+            <input type="checkbox" value="water_temp" /> 水量 (60mL) 及水溫 (35°C)
+          </label>
+          <label class="check-item" onclick="toggleCheckStyle(this)">
+            <input type="checkbox" value="yeast" /> 酵母的分量 (3g)
+          </label>
+          <label class="check-item" onclick="toggleCheckStyle(this)">
+            <input type="checkbox" value="total_weight" /> 加糖後減少麵粉，令每碗總重量一樣
+          </label>
+          <label class="check-item" onclick="toggleCheckStyle(this)">
+            <input type="checkbox" value="time" /> 發酵的時間 (60分鐘)
+          </label>
         </div>
-        <div class="feedback-box" id="fairHint2"></div>
+        <button class="btn-primary" style="margin-top:10px; width:100%;" onclick="checkStep1Q2()">✔️ 核對多選題答案</button>
+        <div class="feedback-box" id="s1q2Feedback"></div>
       </div>
     </div>
 
     <div style="margin-top:16px; text-align:right;">
-      <button class="btn-primary" id="toStep2Btn" onclick="unlockStep(2)" disabled>完成階段一，進入氣體檢驗 ➡️</button>
+      <button class="btn-success" id="toStep2Btn" onclick="goToStep(2)" disabled>
+        完成實驗設計，顯示下一部分：發酵模擬實驗 ➡️
+      </button>
     </div>
   </section>
 
-  <!-- ==================== 階段二：氣體檢驗（王老師石灰水測試） ==================== -->
-  <section class="step-section locked" id="step2Section">
+  <!-- ==================== 第二部分：發酵模擬實驗與觀察選擇題 ==================== -->
+  <section class="step-section" id="step2">
     <div class="step-header">
-      <div class="step-title"><span>🧪 階段二：氣體檢驗實驗（王老師石灰水測試）</span></div>
-      <span class="step-badge" id="badge2">未解鎖</span>
+      <div class="step-title">🥣 第二部分：進行發酵實驗與記錄觀察</div>
+      <span class="step-badge" id="badge2">進行中</span>
     </div>
 
-    <p style="font-size:0.92rem; margin-bottom:10px;">
-      發酵時氣球會脹起。請點擊按鈕把氣體通入<strong>澄清石灰水</strong>中，並在下方填寫你的觀察結果。
+    <p style="font-size:0.9rem; margin-bottom:10px;">
+      請先用 2 個發酵碗測試不同分量的糖（可貼上「👑 預測最高」皇冠），完成第一次 60 分鐘發酵後可解鎖 4 個碗，並試下<strong>篤麵糰</strong>或<strong>入爐焗方包</strong>！
     </p>
 
-    <div style="display:flex; gap:16px; flex-wrap:wrap; align-items:center;">
-      <div style="flex:1; min-width:300px; background:#f7fafc; border:1.5px solid #cbd5e0; border-radius:8px; padding:10px; display:flex; justify-content:center;">
-        <svg width="320" height="150" viewBox="0 0 320 150">
-          <g id="s2Balloon" transform="translate(50, 75)">
-            <ellipse id="s2Ellipse" cx="0" cy="0" rx="30" ry="36" fill="#e53e3e" />
-            <rect x="-5" y="34" width="10" height="8" fill="#c53030" />
-            <text x="0" y="4" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle" id="s2BalloonLabel">氣體❓</text>
-          </g>
-          <path d="M 50 115 L 50 135 L 120 135 L 120 25 L 215 25 L 215 115" fill="none" stroke="#718096" stroke-width="4.5" stroke-linecap="round"/>
-          <path d="M 50 115 L 50 135 L 120 135 L 120 25 L 215 25 L 215 115" fill="none" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="5 5"/>
-          <!-- 試管 -->
-          <rect x="195" y="32" width="40" height="108" rx="20" fill="none" stroke="#4a5568" stroke-width="3"/>
-          <path id="s2Liquid" d="M 197 65 L 233 65 L 233 122 A 18 18 0 0 1 197 122 Z" fill="rgba(226, 232, 240, 0.4)" />
-          <text x="250" y="75" fill="#2d3748" font-size="11" font-weight="bold" id="s2LimeText">澄清石灰水</text>
-        </svg>
-      </div>
-
-      <div style="flex:1; min-width:280px; display:flex; flex-direction:column; gap:8px;">
-        <button class="btn-primary" id="s2SqueezeBtn" onclick="squeezeS2Gas()">💨 擠壓氣球通氣 (0/3)</button>
-        
-        <div class="input-group">
-          <label>📝 請輸入你的石灰水觀察結果：</label>
-          <input type="text" id="s2ObservationInput" placeholder="例如：石灰水變成了乳白色混濁..." />
-        </div>
-        <button class="btn-success" onclick="verifyS2Input()">確認觀察記錄</button>
-        <div class="feedback-box" id="s2Feedback"></div>
-      </div>
-    </div>
-
-    <div style="margin-top:16px; text-align:right;">
-      <button class="btn-primary" id="toStep3Btn" onclick="unlockStep(3)" disabled>完成階段二，進入發酵實驗 ➡️</button>
-    </div>
-  </section>
-
-  <!-- ==================== 階段三：糖的分量與酵母發酵實驗 ==================== -->
-  <section class="step-section locked" id="step3Section">
-    <div class="step-header">
-      <div class="step-title"><span>🥣 階段三：糖的分量與酵母發酵模擬實驗</span></div>
-      <span class="step-badge" id="badge3">未解鎖</span>
-    </div>
-
-    <p style="font-size:0.92rem; margin-bottom:10px;">
-      起初工作檯有 2 個碗讓您測試。完成第一次發酵後可解鎖 4 碗完整對照。請在發酵前後記錄你的觀察。
-    </p>
-
-    <!-- 工作檯 -->
     <div class="workbench">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
         <div>
           <strong>發酵觀察工作檯</strong>
-          <span style="font-size:0.8rem; color:#4a5568; margin-left:6px;">（麵粉 100g、暖水 60mL、酵母 3g）</span>
+          <span style="font-size:0.8rem; color:#4a5568; margin-left:6px;">（固定：麵粉 100g、暖水 60mL、酵母 3g、水溫 35°C）</span>
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
-          <button class="btn-success" id="s3Unlock4Btn" onclick="unlock4Bowls()" style="display:none;">🔓 解鎖第 3、4 號碗</button>
-          <div style="background:#1a202c; color:#68d391; font-family:monospace; font-size:1.1rem; padding:4px 10px; border-radius:6px;" id="s3Timer">⏱️ 00 分鐘</div>
+          <button class="btn-success" id="unlock4Btn" onclick="unlockFourBowls()" style="display:none;">
+            🔓 解鎖第 3、4 號碗（四組完整測試）
+          </button>
+          <div style="background:#1a202c; color:#68d391; font-family:monospace; font-size:1.1rem; padding:4px 10px; border-radius:6px;" id="timerBox">
+            ⏱️ 00 分鐘
+          </div>
         </div>
       </div>
 
-      <div class="bowls-grid" id="s3BowlsGrid"></div>
+      <div class="bowls-grid" id="bowlsGrid"></div>
 
-      <div style="margin-top:12px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-        <button class="btn-primary" id="s3StartBtn" onclick="startS3Fermentation()">▶️ 開始 60 分鐘發酵</button>
-        <button class="btn-accent" id="s3BakeBtn" onclick="bakeS3Bread()" disabled>🔥 入爐焗方包</button>
-        <button class="btn-outline" onclick="resetS3Lab()">🔄 重設此階段</button>
+      <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn-primary" id="startFermentBtn" onclick="startFerment()">▶️ 開始發酵 (60分鐘)</button>
+          <button class="btn-accent" id="bakeBreadBtn" onclick="bakeBread()" disabled>🔥 入爐焗方包</button>
+          <button class="btn-outline" onclick="resetBowls()">🔄 重設發酵碗</button>
+        </div>
+        <div id="crownResultMsg" style="font-size:0.86rem; font-weight:bold; color:#744210;"></div>
       </div>
     </div>
 
-    <!-- 學生觀察記錄輸入區 -->
-    <div class="input-group" style="background:#fff; padding:12px; border-radius:8px; border:1.5px solid #cbd5e0;">
-      <label>📝 請輸入你的麵糰發酵與烘焙觀察記錄：</label>
-      <textarea id="s3ObservationText" rows="2" placeholder="例如：3匙糖的麵糰升得最高、氣孔最多；0匙糖和8匙糖升得最低..."></textarea>
-      <div style="text-align:right; margin-top:6px;">
-        <button class="btn-success" onclick="saveS3Observation()">儲存觀察記錄</button>
+    <!-- 顯微鏡觀察列 -->
+    <div class="micro-panel" id="microPanel">
+      <div class="micro-circle" id="microCircle"></div>
+      <div style="flex:1; min-width:240px;">
+        <div style="font-weight:bold; color:#1a365d; margin-bottom:4px;" id="microTitle">🔬 顯微鏡觀察：1 號碗（0 匙糖）</div>
+        <div style="font-size:0.88rem; color:#2d3748;" id="microDesc"></div>
+        <div style="font-size:0.78rem; color:#718096; margin-top:4px;">💡 點擊上方不同的發酵碗，可以切換觀察碗內酵母菌（單細胞微生物）的狀態。</div>
       </div>
-      <div class="feedback-box" id="s3ObsFeedback"></div>
+    </div>
+
+    <!-- 觀察結果選擇題（不用打字） -->
+    <div class="quiz-grid">
+      <div class="q-card">
+        <h3>3. 根據實驗觀察，加入多少糖的麵糰升得最高、焗出的方包最鬆軟多氣孔？</h3>
+        <div class="opt-list">
+          <button class="opt-btn" onclick="checkStep2Q1(this, false, '0 匙糖缺乏養分，麵糰幾乎沒有升高。')">A. 0 匙糖（不加糖）</button>
+          <button class="opt-btn" onclick="checkStep2Q1(this, true, '正確！適量糖分（約 3 匙）令酵母菌最活躍，麵糰升得最高！')">B. 適量糖（約 3 匙糖）</button>
+          <button class="opt-btn" onclick="checkStep2Q1(this, false, '試下把其中一碗調到 8 匙糖發酵，你會發現過量糖分反而升得很矮！')">C. 過量糖（8 匙糖），因為糖越多一定越高</button>
+        </div>
+        <div class="feedback-box" id="s2q1Feedback"></div>
+      </div>
+
+      <div class="q-card">
+        <h3>4. 觀察「過量糖（8 匙糖）」的發酵碗和焗出的方包，出現了以下哪些現象？（可選多項）</h3>
+        <div class="opt-list" id="s2q2List">
+          <label class="check-item" onclick="toggleCheckStyle(this)">
+            <input type="checkbox" value="low_rise" /> 麵糰升得很矮，篤落去實一實
+          </label>
+          <label class="check-item" onclick="toggleCheckStyle(this)">
+            <input type="checkbox" value="high_rise" /> 麵糰升得最高，氣球脹到最大
+          </label>
+          <label class="check-item" onclick="toggleCheckStyle(this)">
+            <input type="checkbox" value="undissolved" /> 碗底有未溶解的白糖沉澱，焗出方包表面容易燶黑
+          </label>
+          <label class="check-item" onclick="toggleCheckStyle(this)">
+            <input type="checkbox" value="dehydrated" /> 顯微鏡下見到酵母菌細胞的水份被吸走，缺水皺縮
+          </label>
+        </div>
+        <button class="btn-primary" style="margin-top:10px; width:100%;" onclick="checkStep2Q2()">✔️ 核對觀察結果</button>
+        <div class="feedback-box" id="s2q2Feedback"></div>
+      </div>
     </div>
 
     <div style="margin-top:16px; text-align:right;">
-      <button class="btn-primary" id="toStep4Btn" onclick="unlockStep(4)" disabled>完成階段三，進入總結與分析 ➡️</button>
+      <button class="btn-success" id="toStep3Btn" onclick="goToStep(3)" disabled>
+        完成觀察記錄，顯示下一部分：王老師氣體測試 ➡️
+      </button>
     </div>
   </section>
 
-  <!-- ==================== 階段四：分析、小筆記與常犯錯誤 ==================== -->
-  <section class="step-section locked" id="step4Section">
+  <!-- ==================== 第三部分：王老師澄清石灰水氣體測試 ==================== -->
+  <section class="step-section" id="step3">
     <div class="step-header">
-      <div class="step-title"><span>📒 階段四：實驗數據分析與重點筆記</span></div>
-      <span class="step-badge" id="badge4">未解鎖</span>
+      <div class="step-title">🧪 第三部分：王老師實驗室——檢驗氣球內的神秘氣體</div>
+      <span class="step-badge" id="badge3">進行中</span>
     </div>
 
-    <div class="input-group" style="background:#fff; padding:12px; border-radius:8px; border:1.5px solid #cbd5e0; margin-bottom:14px;">
-      <label>🧐 學生分析與總結（請輸入你的科學分析）：</label>
-      <textarea id="s4AnalysisText" rows="3" placeholder="請解釋為什麼適量的糖能幫助發酵，但過量的糖（8匙）反而令酵母發酵變慢（提示：細胞水份與滲透壓）..."></textarea>
-      <div style="text-align:right; margin-top:6px;">
-        <button class="btn-success" onclick="submitS4Analysis()">提交分析</button>
+    <p style="font-size:0.9rem; margin-bottom:10px;">
+      麵糰發酵時令氣球脹起，究竟入面是什麼氣體？王老師把氣球接駁到裝有<strong>澄清石灰水</strong>的大試管。請連續點擊「擠壓氣球通氣」3 次觀察變化：
+    </p>
+
+    <div class="lime-stage-box">
+      <svg width="560" height="230" viewBox="0 0 560 230" style="max-width:100%; height:auto;">
+        <!-- 支架與底座 -->
+        <rect x="310" y="205" width="120" height="12" rx="4" fill="#718096" />
+        <rect x="366" y="45" width="8" height="160" fill="#a0aec0" />
+
+        <!-- 左側大氣球 -->
+        <g id="bigBalloonGroup" transform="translate(105, 118)">
+          <ellipse id="bigBalloon" cx="0" cy="0" rx="52" ry="64" fill="url(#balloonGrad)" style="transition: all 0.35s;" />
+          <rect x="-9" y="60" width="18" height="14" rx="3" fill="#9b2c2c" />
+          <text x="0" y="6" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle" id="bigBalloonText">神秘氣體 ❓</text>
+        </g>
+
+        <defs>
+          <radialGradient id="balloonGrad" cx="30%" cy="30%" r="70%">
+            <stop offset="0%" stop-color="#feb2b2" />
+            <stop offset="100%" stop-color="#e53e3e" />
+          </radialGradient>
+        </defs>
+
+        <!-- 彎曲玻璃導管 -->
+        <path d="M 105 190 L 105 210 L 220 210 L 220 32 L 350 32 L 350 178" fill="none" stroke="#4a5568" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M 105 190 L 105 210 L 220 210 L 220 32 L 350 32 L 350 178" fill="none" stroke="#edf2f7" stroke-width="3.5" stroke-dasharray="8 8" id="tubeFlowDash" />
+
+        <!-- 大試管外框 -->
+        <rect x="315" y="48" width="70" height="152" rx="35" fill="rgba(255,255,255,0.4)" stroke="#2d3748" stroke-width="4" />
+
+        <!-- 試管內石灰水液體 -->
+        <path id="bigLimeLiquid" d="M 317 92 L 383 92 L 383 165 A 33 33 0 0 1 317 165 Z" fill="rgba(226, 232, 240, 0.3)" style="transition: fill 0.5s;" />
+
+        <!-- 白色混濁懸浮微粒層 -->
+        <g id="cloudyParticles" opacity="0" style="transition: opacity 0.5s;">
+          <circle cx="335" cy="115" r="8" fill="rgba(255,255,255,0.75)" />
+          <circle cx="365" cy="125" r="10" fill="rgba(255,255,255,0.75)" />
+          <circle cx="348" cy="145" r="12" fill="rgba(255,255,255,0.8)" />
+          <circle cx="332" cy="158" r="9" fill="rgba(255,255,255,0.75)" />
+          <circle cx="362" cy="160" r="11" fill="rgba(255,255,255,0.8)" />
+          <circle cx="350" cy="108" r="9" fill="rgba(255,255,255,0.7)" />
+        </g>
+
+        <!-- 動態上升氣泡群 -->
+        <g id="activeBubbles" opacity="0">
+          <circle cx="350" cy="172" r="5" fill="#fff" stroke="#718096" stroke-width="1.5">
+            <animate attributeName="cy" from="175" to="95" dur="0.7s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="340" cy="155" r="6" fill="#fff" stroke="#718096" stroke-width="1.5">
+            <animate attributeName="cy" from="175" to="95" dur="0.85s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="360" cy="140" r="4.5" fill="#fff" stroke="#718096" stroke-width="1.5">
+            <animate attributeName="cy" from="175" to="95" dur="0.65s" repeatCount="indefinite" />
+          </circle>
+        </g>
+
+        <!-- 試管旁標籤 -->
+        <rect x="402" y="95" width="145" height="62" rx="8" fill="#fff" stroke="#cbd5e0" stroke-width="1.5" />
+        <text x="474" y="120" fill="#1a365d" font-size="14" font-weight="bold" text-anchor="middle" id="limeMainLabel">澄清石灰水</text>
+        <text x="474" y="142" fill="#718096" font-size="12" text-anchor="middle" id="limeSubLabel">狀態：透明清澈</text>
+      </svg>
+
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <button class="btn-primary" id="squeezeBtn" onclick="squeezeLimeGas()">💨 擠壓氣球通氣 (0/3)</button>
+        <button class="btn-outline" onclick="resetLimeTest()">🔄 重設氣體測試</button>
       </div>
-      <div class="feedback-box" id="s4Feedback"></div>
     </div>
 
-    <h3 style="font-size:1.05rem; color:#1a365d; margin-bottom:8px;">📌 實驗重點筆記 ＆ 常犯錯誤提醒</h3>
-    <div class="notes-grid">
-      <div class="note-card">
-        <strong>📌 1. 酵母發酵原理</strong><br/>
-        酵母菌是單細胞微生物。適量糖分提供養分，使其透過呼吸作用產生<strong>二氧化碳</strong>，氣體受熱膨脹令麵糰升起，焗製後形成鬆軟<strong>氣孔</strong>。
+    <!-- 石灰水觀察與推理選擇題 -->
+    <div class="quiz-grid">
+      <div class="q-card">
+        <h3>5. 把氣球內的氣體通入澄清石灰水後，石灰水發生了什麼變化？</h3>
+        <div class="opt-list">
+          <button class="opt-btn" onclick="checkStep3Q1(this, false, '請先點擊上方「擠壓氣球通氣」按鈕 3 次，仔細觀察試管內的變化！')">A. 保持透明清澈，沒有任何變化</button>
+          <button class="opt-btn" onclick="checkStep3Q1(this, true, '正確！澄清石灰水變成了乳白色混濁狀！')">B. 澄清石灰水變得混濁（呈乳白色）</button>
+          <button class="opt-btn" onclick="checkStep3Q1(this, false, '石灰水並沒有變成藍色，再看清楚試管內的顏色！')">C. 變成了深藍色透明液體</button>
+        </div>
+        <div class="feedback-box" id="s3q1Feedback"></div>
       </div>
-      <div class="note-card">
-        <strong>📌 2. 糖分對發酵的影響</strong><br/>
-        • <strong>適量糖（約3匙）</strong>：養分充足，產氣最多。<br/>
-        • <strong>過量糖（8匙）</strong>：高糖濃度吸走酵母細胞內的水份（脫水），抑制發酵；且剩餘糖分會令表面<strong>燶黑</strong>。
+
+      <div class="q-card">
+        <h3>6. 根據澄清石灰水變混濁的結果，證明酵母發酵產生的氣體是什麼？</h3>
+        <div class="opt-list">
+          <button class="opt-btn" onclick="checkStep3Q2(this, false, '氧氣能助燃，但不會令澄清石灰水變混濁。')">A. 氧氣</button>
+          <button class="opt-btn" onclick="checkStep3Q2(this, true, '正確！只有二氧化碳會令澄清石灰水變混濁！')">B. 二氧化碳</button>
+          <button class="opt-btn" onclick="checkStep3Q2(this, false, '水蒸氣不會令澄清石灰水變混濁。')">C. 水蒸氣</button>
+        </div>
+        <div class="feedback-box" id="s3q2Feedback"></div>
       </div>
-      <div class="mistake-card">
-        <strong>⚠️ 常犯錯誤：石灰水字眼</strong><br/>
-        ❌ 錯誤：「二氧化碳令石灰水變白色液體」<br/>
-        ✅ 正確：「二氧化碳令<strong>澄清石灰水變混濁（乳白色）</strong>」。
+    </div>
+
+    <div style="margin-top:16px; text-align:right;">
+      <button class="btn-success" id="toStep4Btn" onclick="goToStep(4)" disabled>
+        完成氣體測試，顯示最後一部分：實驗分析與小筆記 ➡️
+      </button>
+    </div>
+  </section>
+
+  <!-- ==================== 第四部分：實驗分析與重點小筆記 ==================== -->
+  <section class="step-section" id="step4">
+    <div class="step-header">
+      <div class="step-title">📒 第四部分：實驗結果分析與常犯錯誤溫習</div>
+      <span class="step-badge" id="badge4">最後階段</span>
+    </div>
+
+    <div class="quiz-grid">
+      <div class="q-card">
+        <h3>7. 為什麼加入過量糖分（8 匙糖）時，酵母菌反而不能令麵糰升高？</h3>
+        <div class="opt-list">
+          <button class="opt-btn" onclick="checkStep4Q1(this, false, '糖分本身沒有毒。你可以往上捲動睇下第二部分的顯微鏡畫面，留意酵母細胞的水份變化！')">
+            A. 因為糖分有毒性，把酵母菌毒死了
+          </button>
+          <button class="opt-btn" onclick="checkStep4Q1(this, true, '分析正確！高濃度的糖分會吸走酵母菌細胞內的水份，令細胞缺水皺縮，無法正常產氣。')">
+            B. 糖分濃度太高，吸走了酵母菌細胞內的水份，令酵母菌缺水而無法正常活動
+          </button>
+          <button class="opt-btn" onclick="checkStep4Q1(this, false, '酵母菌不會因為「太飽睡著」，而是因為細胞外部糖濃度太高導致水份流失。')">
+            C. 因為酵母菌吃得太飽，在麵糰入面睡著了
+          </button>
+        </div>
+        <div class="feedback-box" id="s4q1Feedback"></div>
+      </div>
+
+      <div class="q-card">
+        <h3>8. 總結今次實驗，以下哪些結論是正確的？（可選多項）</h3>
+        <div class="opt-list" id="s4q2List">
+          <label class="check-item" onclick="toggleCheckStyle(this)">
+            <input type="checkbox" value="c1" /> 糖的分量會影響酵母發酵使麵糰膨脹的程度
+          </label>
+          <label class="check-item" onclick="toggleCheckStyle(this)">
+            <input type="checkbox" value="c2" /> 適量的糖為酵母菌提供養分，產生大量二氧化碳令麵糰脹起
+          </label>
+          <label class="check-item" onclick="toggleCheckStyle(this)">
+            <input type="checkbox" value="c3" /> 糖落得越多，麵糰就一定升得越高
+          </label>
+          <label class="check-item" onclick="toggleCheckStyle(this)">
+            <input type="checkbox" value="c4" /> 過量的糖會令酵母菌缺水，反而抑制發酵
+          </label>
+        </div>
+        <button class="btn-primary" style="margin-top:10px; width:100%;" onclick="checkStep4Q2()">✔️ 核對總結分析</button>
+        <div class="feedback-box" id="s4q2Feedback"></div>
+      </div>
+    </div>
+
+    <!-- 完成所有題目後顯示的小筆記與常錯地方 -->
+    <div id="finalNotesBox" style="display:none; margin-top:20px; border-top:2px dashed #cbd5e0; padding-top:16px;">
+      <h3 style="font-size:1.15rem; color:#1a365d; margin-bottom:6px;">🎉 恭喜完成整個科學探究！以下是你的溫習小筆記：</h3>
+      <div class="notes-grid">
+        <div class="note-card">
+          <strong>📌 1. 酵母發酵的原理</strong><br/>
+          • 酵母菌是一種<strong>單細胞微生物</strong>。<br/>
+          • 在溫暖和有適量糖分（養分）的環境下，酵母菌會透過呼吸作用釋出<strong>二氧化碳</strong>，氣體令麵糰膨脹，焗製成方包後會留下鬆軟的<strong>氣孔</strong>。
+        </div>
+        <div class="note-card">
+          <strong>📌 2. 糖的分量對發酵的影響</strong><br/>
+          • <strong>無糖 (0匙)</strong>：缺乏養分，產氣極慢，麵糰扁平實心。<br/>
+          • <strong>適量糖 (3匙)</strong>：養分充足，酵母活躍繁殖，麵糰升得最高。<br/>
+          • <strong>過量糖 (8匙)</strong>：糖濃度太高吸走酵母細胞水份（<strong>缺水皺縮</strong>），抑制發酵；而且剩餘太多糖焗製時會令方包表面<strong>燶黑</strong>。
+        </div>
+        <div class="mistake-card">
+          <strong>⚠️ 學生常犯錯誤 1：石灰水字眼</strong><br/>
+          • 測試二氧化碳時，必須寫「令<strong>澄清石灰水變混濁（或呈乳白色）</strong>」。<br/>
+          • ❌ 千祈唔好寫成「石灰水變白色液體」或「變白色透明」。
+        </div>
+        <div class="mistake-card">
+          <strong>⚠️ 學生常犯錯誤 2：公平測試變因</strong><br/>
+          • <strong>探究因素（獨立變因）</strong>：糖的分量。<br/>
+          • <strong>保持不變（控制變因）</strong>：麵粉分量、水量、水溫、酵母分量、發酵時間。<br/>
+          • ❌ 誤區：加糖後<strong>不可減少麵粉</strong>去遷就總重量，否則便同時改變了兩個因素！
+        </div>
       </div>
     </div>
   </section>
 </div>
 
 <script>
-  // 音效開關
-  let soundEnabled = true;
+  // ====== 原生音效合成 (Web Audio API) ======
+  let soundOn = true;
   let audioCtx = null;
-  function getAudioCtx() {
+
+  function getCtx() {
     if (!audioCtx) {
       const AC = window.AudioContext || window.webkitAudioContext;
       if (AC) audioCtx = new AC();
@@ -609,9 +861,10 @@
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     return audioCtx;
   }
+
   function playTone(type) {
-    if (!soundEnabled) return;
-    const ctx = getAudioCtx();
+    if (!soundOn) return;
+    const ctx = getCtx();
     if (!ctx) return;
     const now = ctx.currentTime;
     const osc = ctx.createOscillator();
@@ -619,310 +872,607 @@
     osc.connect(gain);
     gain.connect(ctx.destination);
 
-    if (type === 'ding') {
-      osc.frequency.setValueAtTime(880, now);
+    if (type === 'ok') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(660, now);
+      osc.frequency.exponentialRampToValueAtTime(990, now + 0.18);
       gain.gain.setValueAtTime(0.15, now);
-      gain.gain.exponentialRampToValueAtTime(0.005, now + 0.4);
-      osc.start(now); osc.stop(now + 0.4);
-    } else if (type === 'pop') {
-      osc.frequency.setValueAtTime(350, now);
-      osc.frequency.exponentialRampToValueAtTime(600, now + 0.08);
-      gain.gain.setValueAtTime(0.08, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+      gain.gain.exponentialRampToValueAtTime(0.005, now + 0.22);
+      osc.start(now); osc.stop(now + 0.22);
+    } else if (type === 'warn') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(220, now);
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.exponentialRampToValueAtTime(0.005, now + 0.18);
+      osc.start(now); osc.stop(now + 0.18);
+    } else if (type === 'bubble') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(320 + Math.random()*160, now);
+      osc.frequency.exponentialRampToValueAtTime(620, now + 0.08);
+      gain.gain.setValueAtTime(0.07, now);
+      gain.gain.exponentialRampToValueAtTime(0.005, now + 0.09);
       osc.start(now); osc.stop(now + 0.09);
+    } else if (type === 'pokeSoft') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(280, now);
+      osc.frequency.exponentialRampToValueAtTime(110, now + 0.22);
+      gain.gain.setValueAtTime(0.22, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.24);
+      osc.start(now); osc.stop(now + 0.24);
     }
   }
+
   function toggleSound() {
-    soundEnabled = !soundEnabled;
-    document.getElementById('soundBtn').textContent = soundEnabled ? '🔊 音效：開' : '🔇 音效：關';
+    soundOn = !soundOn;
+    document.getElementById('soundBtn').textContent = soundOn ? '🔊 音效：開' : '🔇 音效：關';
   }
 
-  // 步驟解鎖控制
-  let completedSteps = { 1: false, 2: false, 3: false };
-
-  function unlockStep(stepNum) {
-    if (stepNum === 2) {
-      completedSteps[1] = true;
-      document.getElementById('badge1').textContent = '已完成 ✅';
-      document.getElementById('step2Section').classList.remove('locked');
-      document.getElementById('badge2').textContent = '進行中';
-      document.getElementById('currentStepIndicator').textContent = '目前進度：階段二（氣體檢驗實驗）';
-      document.getElementById('step2Section').scrollIntoView({ behavior: 'smooth' });
-    } else if (stepNum === 3) {
-      completedSteps[2] = true;
-      document.getElementById('badge2').textContent = '已完成 ✅';
-      document.getElementById('step3Section').classList.remove('locked');
-      document.getElementById('badge3').textContent = '進行中';
-      document.getElementById('currentStepIndicator').textContent = '目前進度：階段三（糖的分量與酵母發酵實驗）';
-      document.getElementById('step3Section').scrollIntoView({ behavior: 'smooth' });
-      renderS3Bowls();
-    } else if (stepNum === 4) {
-      completedSteps[3] = true;
-      document.getElementById('badge3').textContent = '已完成 ✅';
-      document.getElementById('step4Section').classList.remove('locked');
-      document.getElementById('badge4').textContent = '進行中';
-      document.getElementById('currentStepIndicator').textContent = '目前進度：階段四（分析與總結筆記）';
-      document.getElementById('step4Section').scrollIntoView({ behavior: 'smooth' });
-    }
+  function toggleCheckStyle(labelEl) {
+    setTimeout(() => {
+      const inp = labelEl.querySelector('input');
+      labelEl.classList.toggle('selected', inp.checked);
+    }, 10);
   }
 
-  // 階段一：公平測試檢查
-  let fairQ1Ok = false, fairQ2Ok = false;
-  function checkFairQ(qNo, btnEl, isCorrect, msg) {
-    const parent = btnEl.parentElement;
+  // ====== 逐步解鎖與顯示控制 ======
+  function goToStep(stepNum) {
+    playTone('ok');
+    const prevNum = stepNum - 1;
+    document.getElementById(`badge${prevNum}`).textContent = '已完成 ✅';
+    document.getElementById(`pill${prevNum}`).className = 'prog-pill done';
+
+    const nextSec = document.getElementById(`step${stepNum}`);
+    nextSec.classList.add('visible');
+    document.getElementById(`pill${stepNum}`).className = 'prog-pill active';
+
+    if (stepNum === 2) renderBowls();
+    nextSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ====== 第一部分：公平測試檢驗 ======
+  let s1q1Done = false;
+  let s1q2Done = false;
+
+  function checkStep1Q1(btn, isOk, msg) {
+    const parent = btn.parentElement;
     parent.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('correct', 'wrong'));
-    const hint = document.getElementById(`fairHint${qNo}`);
-    hint.classList.add('show');
+    const fb = document.getElementById('s1q1Feedback');
 
-    if (isCorrect) {
-      playTone('ding');
-      btnEl.classList.add('correct');
-      hint.className = 'feedback-box show ok';
-      hint.textContent = `✅ ${msg}`;
-      if (qNo === 1) fairQ1Ok = true;
-      if (qNo === 2) fairQ2Ok = true;
-    } else {
-      playTone('pop');
-      btnEl.classList.add('wrong');
-      hint.className = 'feedback-box show warn';
-      hint.textContent = `⚠️ ${msg}`;
-      if (qNo === 1) fairQ1Ok = false;
-      if (qNo === 2) fairQ2Ok = false;
-    }
-
-    if (fairQ1Ok && fairQ2Ok) {
-      document.getElementById('toStep2Btn').disabled = false;
-    }
-  }
-
-  // 階段二：石灰水測試互動
-  let s2SqueezeCount = 0;
-  function squeezeS2Gas() {
-    if (s2SqueezeCount >= 3) return;
-    s2SqueezeCount++;
-    playTone('pop');
-    const rx = 30 - s2SqueezeCount * 6;
-    const ry = 36 - s2SqueezeCount * 7;
-    document.getElementById('s2Ellipse').setAttribute('rx', Math.max(8, rx));
-    document.getElementById('s2Ellipse').setAttribute('ry', Math.max(8, ry));
-    document.getElementById('s2SqueezeBtn').textContent = `💨 擠壓氣球通氣 (${s2SqueezeCount}/3)`;
-
-    const liquid = document.getElementById('s2Liquid');
-    if (s2SqueezeCount === 1) liquid.setAttribute('fill', 'rgba(235, 240, 248, 0.6)');
-    if (s2SqueezeCount === 2) liquid.setAttribute('fill', 'rgba(242, 245, 250, 0.85)');
-    if (s2SqueezeCount === 3) {
-      liquid.setAttribute('fill', 'rgba(250, 252, 255, 0.98)');
-      document.getElementById('s2LimeText').textContent = '石灰水變混濁！';
-      document.getElementById('s2BalloonLabel').textContent = 'CO₂';
-    }
-  }
-
-  function verifyS2Input() {
-    const val = document.getElementById('s2ObservationInput').value.trim();
-    const fb = document.getElementById('s2Feedback');
-    fb.classList.add('show');
-    if (val.includes('混濁') || val.includes('乳白')) {
-      playTone('ding');
+    if (isOk) {
+      playTone('ok');
+      btn.classList.add('correct');
       fb.className = 'feedback-box show ok';
-      fb.textContent = '✅ 觀察記錄正確！石灰水變混濁證明氣體是二氧化碳。您可以前往下一步了！';
-      document.getElementById('toStep3Btn').disabled = false;
+      fb.textContent = `✅ ${msg}`;
+      s1q1Done = true;
     } else {
-      playTone('pop');
+      playTone('warn');
+      btn.classList.add('wrong');
       fb.className = 'feedback-box show warn';
-      fb.textContent = '⚠️ 提示：注意看石灰水是不是變成了「乳白色混濁狀」？請修改記錄後再試。';
+      fb.textContent = `🤔 思考提示：${msg}`;
+      s1q1Done = false;
     }
+    updateStep1Unlock();
   }
 
-  // 階段三：發酵實驗變數
-  let s3UnlockedCount = 2;
-  let s3CrownBowl = null;
-  let s3IsFermenting = false;
-  let s3IsFinished = false;
-  let s3IsBaked = false;
-  let s3Minutes = 0;
-  let s3TimerObj = null;
+  function checkStep1Q2() {
+    const checked = Array.from(document.querySelectorAll('#s1q2List input:checked')).map(i => i.value);
+    const fb = document.getElementById('s1q2Feedback');
 
-  const s3Bowls = [
-    { id: 0, name: '1 號碗', sugar: 0, heightCm: 3.0 },
-    { id: 1, name: '2 號碗', sugar: 3, heightCm: 3.0 },
-    { id: 2, name: '3 號碗', sugar: 1, heightCm: 3.0 },
-    { id: 3, name: '4 號碗', sugar: 8, heightCm: 3.0 }
+    if (checked.includes('sugar')) {
+      playTone('warn');
+      fb.className = 'feedback-box show warn';
+      fb.textContent = '🤔 思考提示：「糖的分量」是今次實驗要改變的因素，如果保持不變就無法比較了！';
+      s1q2Done = false;
+    } else if (checked.includes('total_weight')) {
+      playTone('warn');
+      fb.className = 'feedback-box show warn';
+      fb.textContent = '🤔 常見陷阱：如果因為加了糖就減少麵粉，那「麵粉分量」也跟著改變了，就不是公平測試！';
+      s1q2Done = false;
+    } else if (
+      checked.includes('flour') &&
+      checked.includes('water_temp') &&
+      checked.includes('yeast') &&
+      checked.includes('time') &&
+      checked.length === 4
+    ) {
+      playTone('ok');
+      fb.className = 'feedback-box show ok';
+      fb.textContent = '✅ 完全正確！除了糖的分量外，麵粉、水量與水溫、酵母分量及發酵時間都必須保持不變！';
+      s1q2Done = true;
+    } else {
+      playTone('warn');
+      fb.className = 'feedback-box show warn';
+      fb.textContent = '🤔 還未選齊喔！請檢查看看還有哪些條件（例如麵粉、水量水溫、酵母、時間）是每碗都必須一樣的？';
+      s1q2Done = false;
+    }
+    updateStep1Unlock();
+  }
+
+  function updateStep1Unlock() {
+    document.getElementById('toStep2Btn').disabled = !(s1q1Done && s1q2Done);
+  }
+
+  // ====== 第二部分：發酵模擬與觀察 ======
+  let unlockedBowls = 2;
+  let crownIdx = null;
+  let activeMicroIdx = 0;
+  let fermenting = false;
+  let finished = false;
+  let baked = false;
+  let minutes = 0;
+  let timerId = null;
+  let gasIdentified = false;
+
+  const bowls = [
+    { id: 0, name: '1 號碗', sugar: 0, h: 3.0 },
+    { id: 1, name: '2 號碗', sugar: 3, h: 3.0 },
+    { id: 2, name: '3 號碗', sugar: 1, h: 3.0 },
+    { id: 3, name: '4 號碗', sugar: 8, h: 3.0 }
   ];
 
-  function getS3TargetHeight(sugar) {
-    const curve = { 0: 3.8, 1: 6.2, 2: 8.4, 3: 10.5, 4: 9.8, 5: 7.6, 6: 5.5, 7: 4.3, 8: 3.5 };
-    return curve[sugar] !== undefined ? curve[sugar] : 3.5;
+  function targetH(sugar) {
+    const map = { 0: 3.8, 1: 6.2, 2: 8.4, 3: 10.5, 4: 9.8, 5: 7.5, 6: 5.4, 7: 4.2, 8: 3.5 };
+    return map[sugar] ?? 3.5;
   }
 
-  function renderS3Bowls() {
-    const grid = document.getElementById('s3BowlsGrid');
+  function renderBowls() {
+    const grid = document.getElementById('bowlsGrid');
     grid.innerHTML = '';
 
-    for (let i = 0; i < s3UnlockedCount; i++) {
-      const b = s3Bowls[i];
-      const isCrown = s3CrownBowl === i;
-      const doughPx = Math.round(40 + ((b.heightCm - 3.0) / 7.5) * 95);
-      const ratio = Math.max(0, (b.heightCm - 3.0) / 7.5);
-      const balloonW = Math.round(30 + ratio * 32);
-      const balloonH = Math.round(36 + ratio * 36);
-      const sedimentPx = b.sugar >= 5 ? (b.sugar - 4) * 3 : 0;
-      const poreCount = Math.floor(ratio * 10);
+    for (let i = 0; i < unlockedBowls; i++) {
+      const b = bowls[i];
+      const doughPx = Math.round(40 + ((b.h - 3.0) / 7.5) * 96);
+      const ratio = Math.max(0, (b.h - 3.0) / 7.5);
+      const bW = Math.round(30 + ratio * 32);
+      const bH = Math.round(36 + ratio * 36);
+      const sedPx = b.sugar >= 5 ? (b.sugar - 4) * 3.5 : 0;
+      const poresCount = Math.floor(ratio * 11);
+
       let poresHtml = '';
-      for (let p = 0; p < poreCount; p++) {
-        poresHtml += `<span class="pore" style="left:${10 + (p*25)%70}%; top:${12 + (p*30)%65}%; width:${6+(p%3)*2}px; height:${6+(p%3)*2}px;"></span>`;
+      for (let p = 0; p < poresCount; p++) {
+        poresHtml += `<span class="pore" style="left:${12+(p*23)%72}%; top:${14+(p*29)%66}%; width:${5+(p%3)*2.5}px; height:${5+(p%3)*2.5}px;"></span>`;
+      }
+
+      let crustColor = '#c07a28';
+      let crumbColor = '#fdf3d7';
+      let breadNote = '鬆軟多氣孔';
+      if (b.sugar === 0) {
+        crustColor = '#d69e2e'; crumbColor = '#e9d8a6'; breadNote = '扁平實心無氣孔';
+      } else if (b.sugar >= 6) {
+        crustColor = '#3b2314'; crumbColor = '#dec484'; breadNote = '表面燶黑、內部實心';
+      } else if (b.sugar <= 2) {
+        breadNote = '微脹、氣孔較少';
       }
 
       const card = document.createElement('div');
-      card.className = 'bowl-card';
+      card.className = `bowl-card ${activeMicroIdx === i ? 'active-micro' : ''}`;
+      card.onclick = () => { activeMicroIdx = i; renderBowls(); };
+
       card.innerHTML = `
         <div class="bowl-title">
           <span>${b.name}</span>
-          <span class="crown-slot ${isCrown ? 'active' : ''}" onclick="toggleS3Crown(${i})">${isCrown ? '👑 預測最高' : '➕ 貼皇冠'}</span>
+          <span class="crown-slot ${crownIdx === i ? 'active' : ''}" onclick="event.stopPropagation(); setCrown(${i})">
+            ${crownIdx === i ? '👑 我估最高' : '➕ 貼皇冠'}
+          </span>
         </div>
-        <div class="sugar-controls">
-          <button class="btn-spoon" onclick="changeS3Sugar(${i}, -1)" ${s3IsFermenting || s3IsFinished ? 'disabled' : ''}>➖</button>
-          <span class="sugar-count">🥄 ${b.sugar} 匙</span>
-          <button class="btn-spoon" onclick="changeS3Sugar(${i}, 1)" ${s3IsFermenting || s3IsFinished ? 'disabled' : ''}>➕</button>
+        <div class="sugar-controls" onclick="event.stopPropagation()">
+          <button class="btn-spoon" onclick="adjSugar(${i}, -1)" ${fermenting || finished ? 'disabled' : ''}>➖</button>
+          <span class="sugar-count">🥄 ${b.sugar} 匙糖</span>
+          <button class="btn-spoon" onclick="adjSugar(${i}, 1)" ${fermenting || finished ? 'disabled' : ''}>➕</button>
         </div>
         <div class="vessel-stage">
-          <div style="display:${s3IsBaked ? 'none' : 'flex'}; flex-direction:column; align-items:center; width:100%; height:100%; justify-content:flex-end; position:relative;">
+          <div style="display:${baked ? 'none' : 'flex'}; flex-direction:column; align-items:center; width:100%; height:100%; justify-content:flex-end; position:relative;">
             <div class="balloon-wrap">
-              <div class="balloon" style="width:${balloonW}px; height:${balloonH}px;">${ratio > 0.1 ? 'CO₂' : ''}</div>
+              <div class="balloon" style="width:${bW}px; height:${bH}px;">
+                ${ratio > 0.1 ? (gasIdentified ? 'CO₂' : '❓') : ''}
+              </div>
               <div class="balloon-neck"></div>
             </div>
             <div class="cylinder">
-              <div class="ruler"><span>10cm</span><span>6cm</span><span>3cm</span></div>
-              <div class="dough" id="s3-dough-${i}" style="height:${doughPx}px;" onclick="pokeS3Dough(${i})">
+              <div class="ruler"><span>10cm</span><span>8cm</span><span>6cm</span><span>4cm</span></div>
+              <div class="dough" id="dough-${i}" style="height:${doughPx}px;" onclick="event.stopPropagation(); pokeDough(${i})">
                 ${poresHtml}
-                <div class="sugar-sediment" style="height:${sedimentPx}px;"></div>
+                <div class="sugar-sediment" style="height:${sedPx}px;"></div>
               </div>
             </div>
           </div>
-          <div class="bread-slice" style="display:${s3IsBaked ? 'flex' : 'none'};">
-            <div class="bread-body" style="height:${Math.max(42, doughPx - 10)}px; background:${b.sugar >= 6 ? '#d69e2e' : '#f5deb3'}">
+          <div class="bread-slice" style="display:${baked ? 'flex' : 'none'};">
+            <div class="bread-body" style="height:${Math.max(44, doughPx-10)}px; border-color:${crustColor}; background:${crumbColor};">
               ${poresHtml}
             </div>
+            <div style="font-size:0.75rem; font-weight:bold; color:#744210; margin-top:4px;">🍞 ${breadNote}</div>
           </div>
         </div>
-        <div class="bowl-footer">
-          <div class="height-readout">高度：${b.heightCm.toFixed(1)} cm</div>
-          <div class="poke-msg" id="s3-msg-${i}">${s3IsFinished && !s3IsBaked ? '👆 篤下麵糰' : ''}</div>
+        <div style="margin-top:6px; font-size:0.82rem;">
+          <div style="font-weight:bold; color:#2b6cb0;">高度：${b.h.toFixed(1)} cm</div>
+          <div id="poke-msg-${i}" style="min-height:18px; font-size:0.76rem; color:#744210; font-weight:600;">
+            ${finished && !baked ? '👆 點擊麵糰篤下佢' : ''}
+          </div>
         </div>
       `;
       grid.appendChild(card);
     }
+    renderMicroscope();
   }
 
-  function changeS3Sugar(idx, delta) {
-    if (s3IsFermenting || s3IsFinished) return;
-    const next = s3Bowls[idx].sugar + delta;
+  function renderMicroscope() {
+    const b = bowls[activeMicroIdx];
+    const circle = document.getElementById('microCircle');
+    document.getElementById('microTitle').textContent = `🔬 顯微鏡觀察：${b.name}（${b.sugar} 匙糖）`;
+    const desc = document.getElementById('microDesc');
+    circle.innerHTML = '';
+
+    const coords = [
+      { l: 22, t: 28 }, { l: 76, t: 24 }, { l: 48, t: 70 }, { l: 86, t: 78 }, { l: 24, t: 86 }
+    ];
+
+    if (b.sugar === 0) {
+      desc.textContent = '碗內沒有加糖，酵母菌缺乏充足養分，活動極慢，幾乎沒有出芽繁殖，釋出的氣體極少。';
+      coords.slice(0, 3).forEach(c => {
+        const d = document.createElement('div');
+        d.className = 'yeast-cell';
+        d.style.cssText = `width:24px; height:24px; left:${c.l}px; top:${c.t}px;`;
+        circle.appendChild(d);
+      });
+    } else if (b.sugar <= 4) {
+      desc.textContent = '糖分適量！酵母菌獲得充足養分，活躍地進行「出芽繁殖」並釋出大量氣體，令麵糰快速膨脹。';
+      coords.forEach(c => {
+        const d = document.createElement('div');
+        d.className = 'yeast-cell';
+        d.style.cssText = `width:26px; height:26px; left:${c.l}px; top:${c.t}px;`;
+        if (b.sugar >= 2) {
+          const bud = document.createElement('div');
+          bud.className = 'yeast-bud';
+          d.appendChild(bud);
+        }
+        circle.appendChild(d);
+      });
+    } else {
+      desc.textContent = '⚠️ 糖分過量！碗內糖濃度太高，把酵母菌細胞內的水份吸走（留意水滴流失），令酵母細胞「缺水皺縮」，無法正常產氣。';
+      coords.slice(0, 4).forEach(c => {
+        const d = document.createElement('div');
+        d.className = 'yeast-cell shrunk';
+        d.style.cssText = `width:24px; height:24px; left:${c.l}px; top:${c.t}px;`;
+        const w = document.createElement('span');
+        w.className = 'water-arrow';
+        w.textContent = '💧↗';
+        w.style.cssText = 'left:14px; top:-5px;';
+        d.appendChild(w);
+        circle.appendChild(d);
+      });
+    }
+  }
+
+  function adjSugar(idx, delta) {
+    if (fermenting || finished) return;
+    const next = bowls[idx].sugar + delta;
     if (next < 0 || next > 8) return;
-    s3Bowls[idx].sugar = next;
-    playTone('pop');
-    renderS3Bowls();
+    bowls[idx].sugar = next;
+    activeMicroIdx = idx;
+    playTone('bubble');
+    renderBowls();
   }
 
-  function toggleS3Crown(idx) {
-    if (s3IsFermenting || s3IsFinished) return;
-    s3CrownBowl = (s3CrownBowl === idx) ? null : idx;
-    renderS3Bowls();
+  function setCrown(idx) {
+    if (fermenting || finished) return;
+    crownIdx = (crownIdx === idx) ? null : idx;
+    renderBowls();
   }
 
-  function startS3Fermentation() {
-    if (s3IsFermenting || s3IsFinished) return;
-    s3IsFermenting = true;
-    s3Minutes = 0;
-    document.getElementById('s3StartBtn').disabled = true;
+  function startFerment() {
+    if (fermenting || finished) return;
+    fermenting = true;
+    minutes = 0;
+    document.getElementById('startFermentBtn').disabled = true;
 
-    s3TimerObj = setInterval(() => {
-      s3Minutes += 2;
-      document.getElementById('s3Timer').textContent = `⏱️ ${String(s3Minutes).padStart(2, '0')} 分鐘`;
-      const prog = s3Minutes / 60;
-      for (let i = 0; i < s3UnlockedCount; i++) {
-        const target = getS3TargetHeight(s3Bowls[i].sugar);
-        s3Bowls[i].heightCm = 3.0 + (target - 3.0) * prog;
+    timerId = setInterval(() => {
+      minutes += 2;
+      document.getElementById('timerBox').textContent = `⏱️ ${String(minutes).padStart(2, '0')} 分鐘`;
+      const prog = minutes / 60;
+      for (let i = 0; i < unlockedBowls; i++) {
+        bowls[i].h = 3.0 + (targetH(bowls[i].sugar) - 3.0) * prog;
       }
-      renderS3Bowls();
+      if (minutes % 6 === 0) playTone('bubble');
+      renderBowls();
 
-      if (s3Minutes >= 60) {
-        clearInterval(s3TimerObj);
-        s3IsFermenting = false;
-        s3IsFinished = true;
-        document.getElementById('s3BakeBtn').disabled = false;
-        playTone('ding');
-        if (s3UnlockedCount === 2) document.getElementById('s3Unlock4Btn').style.display = 'inline-block';
-        renderS3Bowls();
+      if (minutes >= 60) {
+        clearInterval(timerId);
+        fermenting = false;
+        finished = true;
+        document.getElementById('bakeBreadBtn').disabled = false;
+        playTone('ok');
+        if (unlockedBowls === 2) {
+          document.getElementById('unlock4Btn').style.display = 'inline-block';
+        }
+        let best = 0;
+        for (let i = 1; i < unlockedBowls; i++) {
+          if (bowls[i].h > bowls[best].h) best = i;
+        }
+        const msgEl = document.getElementById('crownResultMsg');
+        if (crownIdx !== null) {
+          msgEl.textContent = (crownIdx === best)
+            ? `🎉 你的皇冠估中了！${bowls[best].name}升得最高！`
+            : `🔍 結果對比：實際最高的是 ${bowls[best].name}（${bowls[best].h.toFixed(1)} cm）。`;
+        } else {
+          msgEl.textContent = `✅ 發酵完成！試下點擊麵糰篤下佢，或按「入爐焗方包」！`;
+        }
+        renderBowls();
       }
-    }, 150);
+    }, 130);
   }
 
-  function pokeS3Dough(idx) {
-    if (!s3IsFinished || s3IsBaked) return;
-    playTone('pop');
-    const msg = document.getElementById(`s3-msg-${idx}`);
-    const s = s3Bowls[idx].sugar;
-    if (s >= 2 && s <= 4) msg.textContent = '💨 噗哧！好鬆軟，有氣體！';
-    else msg.textContent = '🪨 實一實，氣體較少。';
-  }
-
-  function bakeS3Bread() {
-    if (!s3IsFinished || s3IsBaked) return;
-    s3IsBaked = true;
-    playTone('ding');
-    document.getElementById('s3BakeBtn').disabled = true;
-    renderS3Bowls();
-  }
-
-  function unlock4Bowls() {
-    s3UnlockedCount = 4;
-    document.getElementById('s3Unlock4Btn').style.display = 'none';
-    resetS3Lab();
-  }
-
-  function resetS3Lab() {
-    clearInterval(s3TimerObj);
-    s3IsFermenting = false; s3IsFinished = false; s3IsBaked = false; s3Minutes = 0;
-    document.getElementById('s3Timer').textContent = '⏱️ 00 分鐘';
-    document.getElementById('s3StartBtn').disabled = false;
-    document.getElementById('s3BakeBtn').disabled = true;
-    for (let i = 0; i < s3Bowls.length; i++) s3Bowls[i].heightCm = 3.0;
-    renderS3Bowls();
-  }
-
-  function saveS3Observation() {
-    const text = document.getElementById('s3ObservationText').value.trim();
-    const fb = document.getElementById('s3ObsFeedback');
-    fb.classList.add('show');
-    if (text.length > 5) {
-      playTone('ding');
-      fb.className = 'feedback-box show ok';
-      fb.textContent = '✅ 觀察記錄已成功儲存！您可以解鎖並進入最後階段的分析。';
-      document.getElementById('toStep4Btn').disabled = false;
+  function pokeDough(idx) {
+    activeMicroIdx = idx;
+    renderBowls();
+    if (!finished || baked) return;
+    const dEl = document.getElementById(`dough-${idx}`);
+    const mEl = document.getElementById(`poke-msg-${idx}`);
+    if (bowls[idx].sugar >= 2 && bowls[idx].sugar <= 4) {
+      playTone('pokeSoft');
+      dEl.classList.add('poke-soft');
+      mEl.textContent = '💨 噗哧！好鬆軟，充滿氣體！';
+      setTimeout(() => dEl.classList.remove('poke-soft'), 260);
     } else {
-      playTone('pop');
-      fb.className = 'feedback-box show warn';
-      fb.textContent = '⚠️ 請輸入較詳細的發酵觀察描述後再儲存。';
+      playTone('warn');
+      dEl.classList.add('poke-hard');
+      mEl.textContent = '🪨 實一實，入面氣體極少！';
+      setTimeout(() => dEl.classList.remove('poke-hard'), 220);
     }
   }
 
-  // 階段四：分析提交
-  function submitS4Analysis() {
-    const text = document.getElementById('s4AnalysisText').value.trim();
-    const fb = document.getElementById('s4Feedback');
-    fb.classList.add('show');
-    if (text.length > 10) {
-      playTone('ding');
+  function bakeBread() {
+    if (!finished || baked) return;
+    baked = true;
+    playTone('ok');
+    document.getElementById('bakeBreadBtn').disabled = true;
+    renderBowls();
+  }
+
+  function unlockFourBowls() {
+    unlockedBowls = 4;
+    document.getElementById('unlock4Btn').style.display = 'none';
+    resetBowls();
+  }
+
+  function resetBowls() {
+    clearInterval(timerId);
+    fermenting = false; finished = false; baked = false; minutes = 0;
+    document.getElementById('timerBox').textContent = '⏱️ 00 分鐘';
+    document.getElementById('startFermentBtn').disabled = false;
+    document.getElementById('bakeBreadBtn').disabled = true;
+    document.getElementById('crownResultMsg').textContent = '';
+    bowls.forEach(b => b.h = 3.0);
+    renderBowls();
+  }
+
+  // 第二部分選擇題檢驗
+  let s2q1Done = false;
+  let s2q2Done = false;
+
+  function checkStep2Q1(btn, isOk, msg) {
+    btn.parentElement.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('correct', 'wrong'));
+    const fb = document.getElementById('s2q1Feedback');
+    if (isOk) {
+      playTone('ok');
+      btn.classList.add('correct');
       fb.className = 'feedback-box show ok';
-      fb.textContent = '🎉 分析提交成功！您已經完全掌握了糖量對酵母發酵的影響與滲透壓科學概念！';
+      fb.textContent = `✅ ${msg}`;
+      s2q1Done = true;
     } else {
-      playTone('pop');
+      playTone('warn');
+      btn.classList.add('wrong');
       fb.className = 'feedback-box show warn';
-      fb.textContent = '⚠️ 請嘗試說明適量糖與過量糖對酵母細胞水分的影響。';
+      fb.textContent = `🤔 觀察提示：${msg}`;
+      s2q1Done = false;
+    }
+    updateStep2Unlock();
+  }
+
+  function checkStep2Q2() {
+    const checked = Array.from(document.querySelectorAll('#s2q2List input:checked')).map(i => i.value);
+    const fb = document.getElementById('s2q2Feedback');
+
+    if (checked.includes('high_rise')) {
+      playTone('warn');
+      fb.className = 'feedback-box show warn';
+      fb.textContent = '🤔 8 匙糖並不會升得最高喔！請看顯微鏡自動閃爍的 8 匙糖畫面！';
+      s2q2Done = false;
+      flashHighSugarMicro();
+    } else if (
+      checked.includes('low_rise') &&
+      checked.includes('undissolved') &&
+      checked.includes('dehydrated') &&
+      checked.length === 3
+    ) {
+      playTone('ok');
+      fb.className = 'feedback-box show ok';
+      fb.textContent = '✅ 觀察非常仔細！過量糖分令酵母缺水皺縮、麵糰升唔起，焗出方包表面仲會燶黑！';
+      s2q2Done = true;
+    } else {
+      playTone('warn');
+      fb.className = 'feedback-box show warn';
+      fb.textContent = '🤔 還有正確的觀察現象未勾選喔！（提示：共有 3 項正確現象，請留意顯微鏡及焗方包切面）';
+      s2q2Done = false;
+      flashHighSugarMicro();
+    }
+    updateStep2Unlock();
+  }
+
+  function flashHighSugarMicro() {
+    let idx = bowls.findIndex((b, i) => i < unlockedBowls && b.sugar >= 6);
+    if (idx === -1) {
+      bowls[unlockedBowls - 1].sugar = 8;
+      idx = unlockedBowls - 1;
+    }
+    activeMicroIdx = idx;
+    renderBowls();
+    const mc = document.getElementById('microCircle');
+    mc.classList.remove('flash-alert');
+    void mc.offsetWidth;
+    mc.classList.add('flash-alert');
+  }
+
+  function updateStep2Unlock() {
+    document.getElementById('toStep3Btn').disabled = !(s2q1Done && s2q2Done);
+  }
+
+  // ====== 第三部分：王老師大型澄清石灰水測試 ======
+  let limeStep = 0;
+  let s3q1Done = false;
+  let s3q2Done = false;
+
+  function squeezeLimeGas() {
+    if (limeStep >= 3) return;
+    limeStep++;
+    playTone('bubble');
+
+    const balloon = document.getElementById('bigBalloon');
+    const bubbles = document.getElementById('activeBubbles');
+    const liquid = document.getElementById('bigLimeLiquid');
+    const particles = document.getElementById('cloudyParticles');
+    const mainLbl = document.getElementById('limeMainLabel');
+    const subLbl = document.getElementById('limeSubLabel');
+    const btn = document.getElementById('squeezeBtn');
+
+    balloon.setAttribute('rx', 52 - limeStep * 11);
+    balloon.setAttribute('ry', 64 - limeStep * 13);
+    btn.textContent = `💨 擠壓氣球通氣 (${limeStep}/3)`;
+
+    bubbles.setAttribute('opacity', '1');
+    setTimeout(() => {
+      if (limeStep < 3) bubbles.setAttribute('opacity', '0.25');
+    }, 650);
+
+    if (limeStep === 1) {
+      liquid.setAttribute('fill', 'rgba(235, 240, 246, 0.58)');
+      particles.setAttribute('opacity', '0.35');
+      subLbl.textContent = '狀態：開始出現白色微粒';
+    } else if (limeStep === 2) {
+      liquid.setAttribute('fill', 'rgba(242, 246, 250, 0.84)');
+      particles.setAttribute('opacity', '0.7');
+      subLbl.textContent = '狀態：漸漸變得混濁';
+    } else if (limeStep === 3) {
+      liquid.setAttribute('fill', 'rgba(248, 250, 252, 0.98)');
+      particles.setAttribute('opacity', '1');
+      mainLbl.textContent = '石灰水變混濁！';
+      subLbl.textContent = '狀態：乳白色混濁狀';
+      btn.disabled = true;
+      gasIdentified = true;
+      document.getElementById('bigBalloonText').textContent = 'CO₂';
+      renderBowls();
     }
   }
 
-  function resetAll() {
-    window.location.reload();
+  function resetLimeTest() {
+    limeStep = 0;
+    document.getElementById('bigBalloon').setAttribute('rx', 52);
+    document.getElementById('bigBalloon').setAttribute('ry', 64);
+    document.getElementById('activeBubbles').setAttribute('opacity', '0');
+    document.getElementById('bigLimeLiquid').setAttribute('fill', 'rgba(226, 232, 240, 0.3)');
+    document.getElementById('cloudyParticles').setAttribute('opacity', '0');
+    document.getElementById('limeMainLabel').textContent = '澄清石灰水';
+    document.getElementById('limeSubLabel').textContent = '狀態：透明清澈';
+    const btn = document.getElementById('squeezeBtn');
+    btn.disabled = false;
+    btn.textContent = '💨 擠壓氣球通氣 (0/3)';
+  }
+
+  function checkStep3Q1(btn, isOk, msg) {
+    btn.parentElement.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('correct', 'wrong'));
+    const fb = document.getElementById('s3q1Feedback');
+    if (isOk) {
+      playTone('ok');
+      btn.classList.add('correct');
+      fb.className = 'feedback-box show ok';
+      fb.textContent = `✅ ${msg}`;
+      s3q1Done = true;
+    } else {
+      playTone('warn');
+      btn.classList.add('wrong');
+      fb.className = 'feedback-box show warn';
+      fb.textContent = `🤔 提示：${msg}`;
+      s3q1Done = false;
+    }
+    updateStep3Unlock();
+  }
+
+  function checkStep3Q2(btn, isOk, msg) {
+    btn.parentElement.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('correct', 'wrong'));
+    const fb = document.getElementById('s3q2Feedback');
+    if (isOk) {
+      playTone('ok');
+      btn.classList.add('correct');
+      fb.className = 'feedback-box show ok';
+      fb.textContent = `✅ ${msg}`;
+      s3q2Done = true;
+    } else {
+      playTone('warn');
+      btn.classList.add('wrong');
+      fb.className = 'feedback-box show warn';
+      fb.textContent = `🤔 提示：${msg}`;
+      s3q2Done = false;
+    }
+    updateStep3Unlock();
+  }
+
+  function updateStep3Unlock() {
+    document.getElementById('toStep4Btn').disabled = !(s3q1Done && s3q2Done);
+  }
+
+  // ====== 第四部分：實驗分析與顯示總結筆記 ======
+  let s4q1Done = false;
+  let s4q2Done = false;
+
+  function checkStep4Q1(btn, isOk, msg) {
+    btn.parentElement.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('correct', 'wrong'));
+    const fb = document.getElementById('s4q1Feedback');
+    if (isOk) {
+      playTone('ok');
+      btn.classList.add('correct');
+      fb.className = 'feedback-box show ok';
+      fb.textContent = `✅ ${msg}`;
+      s4q1Done = true;
+    } else {
+      playTone('warn');
+      btn.classList.add('wrong');
+      fb.className = 'feedback-box show warn';
+      fb.textContent = `🤔 思考提示：${msg}`;
+      s4q1Done = false;
+    }
+    checkShowFinalNotes();
+  }
+
+  function checkStep4Q2() {
+    const checked = Array.from(document.querySelectorAll('#s4q2List input:checked')).map(i => i.value);
+    const fb = document.getElementById('s4q2Feedback');
+
+    if (checked.includes('c3')) {
+      playTone('warn');
+      fb.className = 'feedback-box show warn';
+      fb.textContent = '🤔 思考提示：回想 8 匙糖的實驗結果，糖落得太多時，麵糰還有沒有升得更高？';
+      s4q2Done = false;
+    } else if (checked.includes('c1') && checked.includes('c2') && checked.includes('c4') && checked.length === 3) {
+      playTone('ok');
+      fb.className = 'feedback-box show ok';
+      fb.textContent = '✅ 總結完全正確！已為你解鎖下方的「實驗重點小筆記 ＆ 常犯錯誤溫習卡」！';
+      s4q2Done = true;
+    } else {
+      playTone('warn');
+      fb.className = 'feedback-box show warn';
+      fb.textContent = '🤔 還有正確的結論未勾選喔！（提示：共有 3 項正確結論）';
+      s4q2Done = false;
+    }
+    checkShowFinalNotes();
+  }
+
+  function checkShowFinalNotes() {
+    if (s4q1Done && s4q2Done) {
+      document.getElementById('badge4').textContent = '全部完成 🎉';
+      document.getElementById('pill4').className = 'prog-pill done';
+      const notes = document.getElementById('finalNotesBox');
+      notes.style.display = 'block';
+      notes.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 </script>
 
