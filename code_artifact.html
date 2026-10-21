@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>麵糰脹卜卜大作戰——酵母與糖的秘密</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --wood-light: #E6BE8A;
+            --wood-mid: #C8965A;
+            --wood-dark: #8C5A2B;
+            --wood-plank: #B58042;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', 'Noto Sans TC', sans-serif;
+            background-color: #FDF5E6;
+            /* 溫暖烘焙坊磚牆背景 */
+            background-image: 
+                linear-gradient(335deg, rgba(243,225,198,0.5) 23px, transparent 23px),
+                linear-gradient(155deg, rgba(243,225,198,0.5) 23px, transparent 23px),
+                linear-gradient(335deg, rgba(243,225,198,0.5) 23px, transparent 23px),
+                linear-gradient(155deg, rgba(243,225,198,0.5) 23px, transparent 23px);
+            background-size: 58px 58px;
+            background-position: 0px 2px, 4px 35px, 29px 31px, 34px 6px;
+            color: #4A3018;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        /* 實體木頭工作檯面材質 */
+        .wood-workbench {
+            background: linear-gradient(180deg, #F5DEB3 0%, #E3B982 78%, #C59153 92%, #9B6933 100%);
+            border-top: 6px solid #FFF3D6;
+            border-bottom: 14px solid #754C24;
+            box-shadow: 0 18px 30px rgba(74, 48, 24, 0.22), inset 0 4px 12px rgba(255,255,255,0.6);
+        }
+
+        /* 木頭層架 */
+        .wood-shelf {
+            background: linear-gradient(180deg, #DEB887 0%, #B8864B 100%);
+            border-bottom: 8px solid #7D5224;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+
+        /* 遊戲立體觸感按鈕 */
+        .tactile-btn {
+            transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.12s ease;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.22);
+        }
+        .tactile-btn:active:not(:disabled) {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 rgba(0,0,0,0.22);
+        }
+
+        /* 擬人化麵糰外觀 */
+        .dough-body {
+            background: linear-gradient(180deg, #FFF5B8 0%, #FFE17D 65%, #F2B938 100%);
+            border-top: 3.5px solid #D99B1E;
+            border-radius: 50% 50% 0 0 / 28px 28px 0 0;
+            box-shadow: inset 0 8px 12px rgba(255, 255, 255, 0.85), inset 0 -8px 14px rgba(180, 83, 9, 0.25);
+            transition: height 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.2s ease, background 0.3s ease;
+            transform-origin: bottom center;
+        }
+        .dough-thirsty {
+            background: linear-gradient(180deg, #F0E1A1 0%, #DEC371 65%, #C9A63B 100%);
+        }
+
+        /* 篤麵糰動畫：軟綿綿彈跳 vs 實一實 */
+        @keyframes pokeSoftSquish {
+            0%   { transform: scaleY(1) scaleX(1); }
+            30%  { transform: scaleY(0.74) scaleX(1.14); border-radius: 35% 35% 0 0 / 12px 12px 0 0; }
+            60%  { transform: scaleY(1.09) scaleX(0.95); }
+            80%  { transform: scaleY(0.95) scaleX(1.03); }
+            100% { transform: scaleY(1) scaleX(1); }
+        }
+        .anim-poke-soft {
+            animation: pokeSoftSquish 0.65s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        @keyframes pokeHardThud {
+            0%   { transform: scaleY(1); }
+            35%  { transform: scaleY(0.96) translateX(-2px); }
+            70%  { transform: scaleY(0.98) translateX(2px); }
+            100% { transform: scaleY(1) translateX(0); }
+        }
+        .anim-poke-hard {
+            animation: pokeHardThud 0.28s ease-in-out;
+        }
+
+        /* 糖粒掉落動畫 */
+        @keyframes sugarCrystalFall {
+            0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+            85%  { opacity: 1; }
+            100% { transform: translateY(150px) rotate(140deg) scale(0.7); opacity: 0; }
+        }
+        .sugar-crystal {
+            position: absolute;
+            top: 4px;
+            width: 9px;
+            height: 9px;
+            background: #FFFFFF;
+            border: 1.5px solid #94A3B8;
+            border-radius: 2px;
+            z-index: 40;
+            pointer-events: none;
+            animation: sugarCrystalFall 0.55s ease-in forwards;
+        }
+
+        /* 麵糰內氣泡上升動畫 */
+        @keyframes gasBubbleRise {
+            0%   { transform: translateY(0) scale(0.4); opacity: 0; }
+            20%  { opacity: 0.9; }
+            85%  { opacity: 0.9; }
+            100% { transform: translateY(-125px) scale(1.25); opacity: 0; }
+        }
+        .gas-bubble {
+            position: absolute;
+            bottom: 6px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1.5px solid rgba(217, 119, 6, 0.45);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: gasBubbleRise 2.2s ease-in infinite;
+        }
+
+        /* 篤麵糰時噴出的大氣泡 */
+        @keyframes puffBurst {
+            0%   { transform: translate(0, 0) scale(0.5); opacity: 1; }
+            100% { transform: translate(var(--tx), -75px) scale(1.5); opacity: 0; }
+        }
+        .puff-particle {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            width: 14px;
+            height: 14px;
+            background: rgba(255,255,255,0.95);
+            border: 2px solid #F59E0B;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 45;
+            animation: puffBurst 0.65s ease-out forwards;
+        }
+
+        /* 視覺線索閃爍動畫（答錯時自動引導觀察） */
+        @keyframes clueFlashRing {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); transform: scale(1); }
+            25%, 75% { box-shadow: 0 0 0 10px rgba(244, 63, 94, 0.65); transform: scale(1.04); }
+            50%      { box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.9); transform: scale(1.02); }
+        }
+        .clue-highlight-flash {
+            animation: clueFlashRing 0.9s ease-in-out 4;
+            border-color: #F43F5E !important;
+        }
+
+        /* 水滴被糖吸走動畫 (放大鏡內) */
+        @keyframes waterSuckOut {
+            0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--wx), var(--wy)) scale(0.4); opacity: 0; }
+        }
+        .water-drop-suck {
+            animation: waterSuckOut 1.1s ease-in infinite;
+        }
+
+        /* 皇冠貼紙搖擺與拖曳感 */
+        @keyframes crownFloat {
+            0%, 100% { transform: rotate(-5deg) translateY(0); }
+            50%      { transform: rotate(5deg) translateY(-4px); }
+        }
+        .crown-sticker {
+            animation: crownFloat 2.2s ease-in-out infinite;
+            cursor: grab;
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.25));
+        }
+        .crown-sticker:active {
+            cursor: grabbing;
+            transform: scale(1.15);
+        }
+
+        /* 焗爐紅外線發熱光效 */
+        @keyframes ovenGlow {
+            0%, 100% { background-color: rgba(251, 113, 36, 0.25); }
+            50%      { background-color: rgba(239, 68, 68, 0.48); }
+        }
+        .oven-baking-overlay {
+            animation: ovenGlow 0.6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="pb-14">
+
+    <!-- 頂部：木頭招牌與道具欄 -->
+    <header class="wood-shelf text-white sticky top-0 z-50 px-3 sm:px-6 py-2.5">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+            <!-- 標題 -->
+            <div class="flex items-center gap-2.5">
+                <div class="w-11 h-11 rounded-2xl bg-[#FFF3B0] border-2 border-[#7D5224] flex items-center justify-center text-2xl shadow">
+                    🍞
+                </div>
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="bg-[#7D5224] text-amber-200 text-[11px] font-black px-2 py-0.5 rounded-full">小五科學探究</span>
+                        <span id="gas-top-badge" class="bg-purple-700 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-sm">
+                            氣球入面：神秘氣體 ❓
+                        </span>
+                    </div>
+                    <h1 class="text-lg sm:text-2xl font-black tracking-wide text-[#FFFDF7] drop-shadow">
+                        麵糰脹卜卜大作戰
+                    </h1>
+                </div>
+            </div>
+
+            <!-- 固定公平測試條件 + 音效開關 -->
+            <div class="flex items-center gap-2">
+                <div class="hidden md:flex items-center gap-1.5 bg-[#8C5A2B]/80 border border-amber-200/40 px-3 py-1.5 rounded-xl text-xs font-bold text-amber-100">
+                    <span>⚖️ 公平測試（每碗相同）：麵粉1杯 + 酵母1匙 + 暖水(35°C)</span>
+                </div>
+                <button onclick="toggleSound()" id="sound-toggle-btn" class="tactile-btn bg-amber-100 hover:bg-white text-[#5A3E2B] border-2 border-[#7D5224] font-black px-3 py-1.5 rounded-xl text-xs sm:text-sm flex items-center gap-1.5">
+                    <i class="fa-solid fa-volume-high text-amber-600" id="sound-icon"></i>
+                    <span id="sound-label">音效：開</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-3 sm:px-6 mt-4 space-y-6">
+
+        <!-- 頂部互動道具架：皇冠預測貼紙 + 番茄鐘計時器 + 焗爐與王老師入口 -->
+        <section class="bg-[#FFF8E7] border-4 border-[#C8965A] rounded-3xl p-3.5 sm:p-4 shadow-md flex flex-col lg:flex-row items-center justify-between gap-4">
+            
+            <!-- 左：皇冠貼紙底座（可拖曳或點擊貼落碗度） -->
+            <div class="flex items-center gap-3 bg-amber-100/90 border-2 border-amber-400 rounded-2xl px-3.5 py-2 w-full lg:w-auto justify-between sm:justify-start">
+                <div id="crown-dock" class="flex items-center gap-2">
+                    <div id="draggable-crown" draggable="true" ondragstart="onCrownDragStart(event)" onclick="cycleCrownBowl()"
+                         class="crown-sticker bg-gradient-to-b from-yellow-300 to-amber-400 border-2 border-amber-700 rounded-2xl px-3 py-1.5 flex items-center gap-1.5 shadow-md"
+                         title="拖曳或者撳我貼落發酵碗！">
+                        <span class="text-2xl">👑</span>
+                        <span class="text-xs font-black text-amber-950">我估佢最高！</span>
+                    </div>
+                </div>
+                <div class="text-xs font-bold text-amber-950 leading-tight">
+                    <div id="crown-hint-text" class="font-black text-[#B45309]">👆 開動前：拖張皇冠貼紙落你睇好嘅碗！</div>
+                    <div class="text-[11px] text-stone-600">（亦可以直情撳個碗貼上去）</div>
+                </div>
+            </div>
+
+            <!-- 中：番茄廚房計時器與發酵控制 -->
+            <div class="flex flex-wrap items-center justify-center gap-2.5">
+                <!-- 番茄鐘 -->
+                <div class="flex items-center gap-2 bg-red-50 border-2 border-red-300 px-3 py-1.5 rounded-2xl">
+                    <span id="tomato-clock" class="text-2xl">🍅</span>
+                    <div class="w-28 sm:w-36">
+                        <div class="flex justify-between text-[11px] font-black text-red-900">
+                            <span>發酵時間</span>
+                            <span><span id="timer-min-text">0</span> / 60 分鐘</span>
+                        </div>
+                        <div class="w-full h-2.5 bg-red-200 rounded-full overflow-hidden mt-0.5">
+                            <div id="timer-bar-fill" class="h-full bg-gradient-to-r from-red-500 to-amber-500 rounded-full transition-all duration-100" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 開始發酵按鈕 -->
+                <button id="btn-start-ferment" onclick="toggleFermentation()" class="tactile-btn bg-emerald-500 hover:bg-emerald-600 text-white border-2 border-emerald-800 font-black px-4 py-2 rounded-2xl text-sm sm:text-base flex items-center gap-1.5">
+                    <i class="fa-solid fa-play" id="play-btn-icon"></i>
+                    <span id="play-btn-text">開始發酵</span>
+                </button>
+
+                <!-- 速度切換 -->
+                <button onclick="toggleSpeed()" id="speed-btn" class="tactile-btn bg-amber-200 hover:bg-amber-300 text-amber-950 border-2 border-amber-500 font-black px-3 py-2 rounded-2xl text-xs">
+                    ⚡ 速度：2x
+                </button>
+
+                <!-- 入爐焗方包按鈕（60分鐘後亮起） -->
+                <button id="btn-bake-oven" onclick="bakeBreadInOven()" disabled
+                        class="tactile-btn bg-orange-500 hover:bg-orange-600 disabled:bg-stone-300 disabled:border-stone-400 disabled:text-stone-500 text-white border-2 border-orange-800 font-black px-4 py-2 rounded-2xl text-sm flex items-center gap-1.5">
+                    <span>🔥 送入焗爐焗方包</span>
+                </button>
+
+                <!-- 重設 -->
+                <button onclick="resetWorkbench()" class="tactile-btn bg-white hover:bg-stone-100 text-stone-700 border-2 border-stone-400 font-black px-3 py-2 rounded-2xl text-xs">
+                    🔄 重來
+                </button>
+            </div>
+        </section>
+
+        <!-- 王老師解鎖 4 碗 PK 提示橫幅（完成第一次 2 碗觀察後彈出） -->
+        <section id="unlock-4bowls-banner" class="hidden bg-gradient-to-r from-amber-100 via-yellow-50 to-orange-100 border-4 border-amber-500 rounded-3xl p-4 shadow-lg">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-2xl shrink-0 shadow">
+                        👩‍🏫
+                    </div>
+                    <div>
+                        <span class="bg-amber-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full">🔓 王老師進階挑戰</span>
+                        <p class="font-black text-sm sm:text-base text-amber-950 mt-0.5">
+                            「如果你想證明『糖太多反而唔好』，你兩個碗分別要落幾多匙糖先有說服力？」
+                        </p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                    <button onclick="unlockAllFourBowls(false)" class="tactile-btn bg-emerald-500 hover:bg-emerald-600 text-white border-2 border-emerald-800 font-black px-3.5 py-2 rounded-2xl text-xs sm:text-sm">
+                        ➕ 解鎖第 3、4 號碗自己調配！
+                    </button>
+                    <button onclick="unlockAllFourBowls(true)" class="tactile-btn bg-amber-500 hover:bg-amber-600 text-white border-2 border-amber-800 font-black px-3.5 py-2 rounded-2xl text-xs sm:text-sm">
+                        🥄 一鍵擺放 (0, 1, 3, 8匙糖) 對照
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 發酵完成後：皇冠預測結果 & 篤麵糰提示 -->
+        <div id="post-ferment-bar" class="hidden bg-emerald-100 border-3 border-emerald-500 rounded-2xl px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 shadow">
+            <div class="flex items-center gap-2 text-xs sm:text-sm font-black text-emerald-950">
+                <span class="text-xl">👆</span>
+                <span id="post-ferment-msg">60 分鐘到！快啲用滑鼠/手指「篤下個麵糰」試下軟唔軟熟，或者撳「🔥 送入焗爐焗方包」！</span>
+            </div>
+            <button onclick="scrollToSection('wang-lab-section')" class="tactile-btn bg-purple-600 hover:bg-purple-700 text-white font-black text-xs px-3 py-1.5 rounded-xl">
+                🧪 去王老師實驗室驗氣體 👇
+            </button>
+        </div>
+
+        <!-- 核心木頭烘焙工作檯（2 碗起手 -> 可解鎖 4 碗） -->
+        <section class="wood-workbench rounded-3xl p-4 sm:p-6 relative">
+            
+            <!-- 焗爐烘烤 3 秒動畫遮罩 -->
+            <div id="oven-overlay" class="hidden absolute inset-0 z-40 rounded-3xl oven-baking-overlay backdrop-blur-[2px] flex flex-col items-center justify-center text-white">
+                <div class="bg-[#4A2511]/95 border-4 border-orange-400 rounded-3xl p-6 text-center shadow-2xl max-w-sm">
+                    <div class="text-5xl mb-2 animate-bounce">🔥🍞🔥</div>
+                    <h3 class="text-xl font-black text-amber-200">焗爐 200°C 烘烤中...</h3>
+                    <p class="text-xs text-amber-100 mt-1">留意睇下麵糰入面嘅氣泡會變成點！</p>
+                </div>
+            </div>
+
+            <!-- 發酵碗擺放區 -->
+            <div id="workbench-bowls-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto transition-all duration-300">
+                <!-- 由 JS 動態生成 2 個或 4 個發酵碗 -->
+            </div>
+
+            <!-- 木檯底部操作小提示 -->
+            <div class="mt-4 flex flex-wrap items-center justify-between text-xs font-black text-[#5A3E2B] px-2 gap-2">
+                <span>💡 貼士：撳「🥄+落糖」睇糖粒跌落碗；撳「🔍放大鏡」偷睇酵母小精靈！</span>
+                <span id="mode-indicator-text" class="bg-[#7D5224] text-amber-100 px-3 py-1 rounded-full">
+                    目前模式：2 碗 PK 賽（完成一次發酵可解鎖 4 碗）
+                </span>
+            </div>
+        </section>
+
+        <!-- 下方雙欄：左邊「🔍 神奇放大鏡（酵母小精靈）」 + 右邊「🧪 王老師實驗室（澄清石灰水測試）」 -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- 左欄：神奇放大鏡（佔 6 欄） -->
+            <div id="magnifier-panel" class="lg:col-span-6 bg-[#FFFDF7] border-4 border-[#C8965A] rounded-3xl p-4 sm:p-5 shadow-md flex flex-col justify-between transition-all duration-300">
+                <div>
+                    <div class="flex items-center justify-between gap-2 mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">🔍</span>
+                            <h2 class="text-base sm:text-lg font-black text-[#4A3018]">神奇放大鏡：偷睇酵母小精靈</h2>
+                        </div>
+                        <div id="mag-bowl-tabs" class="flex items-center gap-1">
+                            <!-- JS 生成碗切換鈕 -->
+                        </div>
+                    </div>
+
+                    <!-- 顯微放大圓窗 -->
+                    <div id="mag-viewport" class="relative rounded-3xl border-4 border-amber-400 bg-gradient-to-b from-[#FFF9E6] to-[#FFF0C2] p-4 min-h-[210px] flex flex-col justify-between overflow-hidden shadow-inner">
+                        <div class="flex items-center justify-between z-10">
+                            <span id="mag-current-label" class="bg-amber-600 text-white text-xs font-black px-3 py-1 rounded-full">
+                                1號碗 (0匙糖)
+                            </span>
+                            <span id="mag-condition-tag" class="bg-white/90 text-amber-950 border border-amber-400 text-xs font-black px-2.5 py-1 rounded-full">
+                                狀態
+                            </span>
+                        </div>
+
+                        <!-- 小精靈 SVG 動態舞台 -->
+                        <div id="mag-sprite-stage" class="my-1 flex items-center justify-center min-h-[125px] relative">
+                            <!-- JS 渲染小精靈：瞓覺 / 吹氣 / 糖吸走水滴 -->
+                        </div>
+
+                        <!-- 簡短一句話說明 (<15字) -->
+                        <div id="mag-short-caption" class="bg-white/95 border-2 border-amber-300 rounded-2xl px-3 py-2 text-center text-xs sm:text-sm font-black text-[#4A3018] shadow-sm">
+                            <!-- JS 填入極簡說明 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右欄：王老師實驗室——測試神秘氣體（佔 6 欄） -->
+            <div id="wang-lab-section" class="lg:col-span-6 bg-[#FFFDF7] border-4 border-[#8B5CF6] rounded-3xl p-4 sm:p-5 shadow-md flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">👩‍🏫</span>
+                            <div>
+                                <h2 class="text-base sm:text-lg font-black text-purple-950">王老師實驗室：呢啲係咩氣體？</h2>
+                                <p class="text-xs font-bold text-stone-600">將氣球入面嘅神秘氣體通入「澄清石灰水」試下！</p>
+                            </div>
+                        </div>
+                        <span id="limewater-status-pill" class="bg-purple-100 text-purple-900 border border-purple-300 text-xs font-black px-2.5 py-1 rounded-full">
+                            待測試
+                        </span>
+                    </div>
+
+                    <!-- 石灰水互動動畫區 -->
+                    <div class="bg-gradient-to-b from-slate-50 to-purple-50/60 border-2 border-purple-200 rounded-2xl p-3 flex flex-col sm:flex-row items-center justify-around gap-4 my-2">
+                        
+                        <!-- SVG：氣球導管通入澄清石灰水試管 -->
+                        <div id="limewater-svg-box" class="relative w-52 h-40 flex items-center justify-center rounded-2xl p-1 transition-all">
+                            <svg viewBox="0 0 220 155" class="w-full h-full overflow-visible">
+                                <!-- 收集咗氣體嘅氣球 -->
+                                <g id="lab-balloon-group" style="transform-origin: 48px 55px; transition: transform 0.5s ease;">
+                                    <ellipse cx="48" cy="48" rx="28" ry="34" fill="#34D399" stroke="#059669" stroke-width="3"/>
+                                    <text x="48" y="52" text-anchor="middle" font-size="11" font-weight="900" fill="#FFFFFF" id="lab-balloon-text">神秘氣體❓</text>
+                                </g>
+                                <!-- 彎曲導氣管 -->
+                                <path d="M 48 82 L 48 18 L 148 18 L 148 118" fill="none" stroke="#64748B" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M 48 82 L 48 18 L 148 18 L 148 118" fill="none" stroke="#E2E8F0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+                                <!-- 試管本體 -->
+                                <path d="M 122 38 L 122 122 A 26 26 0 0 0 174 122 L 174 38" fill="rgba(255,255,255,0.7)" stroke="#94A3B8" stroke-width="3.5"/>
+                                
+                                <!-- 石灰水液體 (由透明變乳白混濁) -->
+                                <path id="limewater-liquid" d="M 124 72 L 124 122 A 24 24 0 0 0 172 122 L 172 72 Z" fill="rgba(224, 242, 254, 0.45)" style="transition: fill 1.2s ease;"/>
+                                
+                                <!-- 試管內冒出嘅氣泡群 -->
+                                <g id="limewater-bubbles" class="hidden">
+                                    <circle cx="148" cy="112" r="4" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1">
+                                        <animate attributeName="cy" from="118" to="74" dur="0.6s" repeatCount="indefinite"/>
+                                    </circle>
+                                    <circle cx="140" cy="100" r="3.5" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1">
+                                        <animate attributeName="cy" from="115" to="74" dur="0.75s" repeatCount="indefinite"/>
+                                    </circle>
+                                    <circle cx="155" cy="95" r="4.5" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1">
+                                        <animate attributeName="cy" from="118" to="74" dur="0.5s" repeatCount="indefinite"/>
+                                    </circle>
+                                </g>
+
+                                <!-- 試管標籤 -->
+                                <rect x="115" y="138" width="66" height="17" rx="6" fill="#EDE9FE" stroke="#8B5CF6" stroke-width="1.5"/>
+                                <text x="148" y="150" text-anchor="middle" font-size="10" font-weight="900" fill="#4C1D95" id="limewater-tube-label">澄清石灰水</text>
+                            </svg>
+                        </div>
+
+                        <!-- 操作與問答步驟 -->
+                        <div class="flex-1 space-y-2.5 w-full">
+                            <button id="btn-bubble-gas" onclick="bubbleGasIntoLimewater()" class="tactile-btn w-full bg-purple-600 hover:bg-purple-700 text-white border-2 border-purple-900 font-black py-2.5 px-3 rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-1.5">
+                                <span>💨 1. 擠壓氣球，通氣入石灰水</span>
+                            </button>
+
+                            <!-- 通氣後解鎖的問題 -->
+                            <div id="gas-quiz-box" class="opacity-60 pointer-events-none transition-opacity bg-white border-2 border-purple-200 rounded-2xl p-2.5">
+                                <p class="text-xs font-black text-purple-950 mb-2">
+                                    ❓ 2. 澄清石灰水<span class="text-rose-600 underline">變混濁</span>喇！呢種氣體係？
+                                </p>
+                                <div class="grid grid-cols-3 gap-1.5">
+                                    <button onclick="checkGasAnswer('O2')" class="tactile-btn bg-stone-100 hover:bg-purple-100 text-stone-800 border border-stone-300 font-black py-1.5 rounded-xl text-xs">氧氣</button>
+                                    <button onclick="checkGasAnswer('CO2')" class="tactile-btn bg-stone-100 hover:bg-purple-100 text-stone-800 border border-stone-300 font-black py-1.5 rounded-xl text-xs">二氧化碳</button>
+                                    <button onclick="checkGasAnswer('H2O')" class="tactile-btn bg-stone-100 hover:bg-purple-100 text-stone-800 border border-stone-300 font-black py-1.5 rounded-xl text-xs">水蒸氣</button>
+                                </div>
+                                <div id="gas-quiz-feedback" class="hidden mt-2 text-xs font-black px-2.5 py-1.5 rounded-xl"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 底部：小偵探闖關挑戰（答錯自動閃爍工作檯視覺線索，絕不直接給答案！） -->
+        <section class="bg-[#FFFDF7] border-4 border-[#C8965A] rounded-3xl p-4 sm:p-5 shadow-md">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">🕵️</span>
+                    <h2 class="text-base sm:text-lg font-black text-[#4A3018]">烘焙小偵探：終極考驗（選錯會閃爍線索提示！）</h2>
+                </div>
+                <span id="challenge-score-pill" class="bg-amber-100 border-2 border-amber-400 text-amber-950 text-xs font-black px-3 py-1 rounded-full">
+                    過關：0 / 2
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- 挑戰題 1 -->
+                <div id="quiz-card-1" class="bg-amber-50/60 border-2 border-amber-200 rounded-2xl p-3.5 flex flex-col justify-between">
+                    <div>
+                        <span class="bg-amber-500 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full">考驗 1：點解 8 匙糖長唔高？</span>
+                        <p class="font-black text-sm text-[#4A3018] mt-1.5 mb-2.5">
+                            落咗 8 匙超多糖，點解個麵糰反而脹唔起、焗出嚟又實一實？
+                        </p>
+                        <div class="space-y-1.5">
+                            <button onclick="answerChallenge(1, false, '飽到瞓著？望下閃緊嘅放大鏡，小精靈係瞓覺定係水份俾糖吸走晒？')"
+                                    class="w-full text-left px-3 py-2 rounded-xl bg-white hover:bg-amber-100 border border-stone-300 text-xs font-bold">
+                                A. 酵母小精靈食得太飽，喺入面瞓著咗
+                            </button>
+                            <button onclick="answerChallenge(1, true, '🎉 觀察入微！太多糖會吸走晒啲水份，令酵母口渴無力吹氣！')"
+                                    class="w-full text-left px-3 py-2 rounded-xl bg-white hover:bg-amber-100 border border-stone-300 text-xs font-bold">
+                                B. 糖太多吸走晒酵母嘅水份，令佢口渴無力產生氣體
+                            </button>
+                            <button onclick="answerChallenge(1, false, '糖唔會食氣泡㗎！望下自動打開嘅 8 匙糖放大鏡入面嘅藍色水滴去咗邊？')"
+                                    class="w-full text-left px-3 py-2 rounded-xl bg-white hover:bg-amber-100 border border-stone-300 text-xs font-bold">
+                                C. 啲糖將氣泡全部食晒落肚
+                            </button>
+                        </div>
+                    </div>
+                    <div id="quiz-fb-1" class="hidden mt-2.5 p-2.5 rounded-xl text-xs font-black"></div>
+                </div>
+
+                <!-- 挑戰題 2 -->
+                <div id="quiz-card-2" class="bg-amber-50/60 border-2 border-amber-200 rounded-2xl p-3.5 flex flex-col justify-between">
+                    <div>
+                        <span class="bg-orange-500 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full">考驗 2：方包入面嘅氣孔</span>
+                        <p class="font-black text-sm text-[#4A3018] mt-1.5 mb-2.5">
+                            食方包嗰陣見到入面有好多「氣孔（窿窿）」，其實係點樣嚟㗎？
+                        </p>
+                        <div class="space-y-1.5">
+                            <button onclick="answerChallenge(2, false, '試下撳「🔥送入焗爐焗方包」或者篤下 3 匙糖麵糰，入面走出嚟嘅係咩？')"
+                                    class="w-full text-left px-3 py-2 rounded-xl bg-white hover:bg-amber-100 border border-stone-300 text-xs font-bold">
+                                A. 麵包師傅用牙籤一粒一粒篤出嚟嘅
+                            </button>
+                            <button onclick="answerChallenge(2, true, '🎉 完全正確！酵母食適量糖排出二氧化碳氣泡，焗熟後就留低鬆軟氣孔！')"
+                                    class="w-full text-left px-3 py-2 rounded-xl bg-white hover:bg-amber-100 border border-stone-300 text-xs font-bold">
+                                B. 酵母食適量糖產生嘅氣泡（二氧化碳），喺麵糰入面撐開嘅空間
+                            </button>
+                            <button onclick="answerChallenge(2, false, '睇下 0 匙糖同 3 匙糖嘅高度同切面，單靠暖水蒸發會差咁遠嗎？')"
+                                    class="w-full text-left px-3 py-2 rounded-xl bg-white hover:bg-amber-100 border border-stone-300 text-xs font-bold">
+                                C. 暖水自己沸騰變成嘅水泡
+                            </button>
+                        </div>
+                    </div>
+                    <div id="quiz-fb-2" class="hidden mt-2.5 p-2.5 rounded-xl text-xs font-black"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        /******************************************************************
+         * 1. 原生 Web Audio API 合成音效系統 (零外部音檔依賴)
+         ******************************************************************/
+        let audioCtx = null;
+        let soundEnabled = true;
+
+        function ensureAudioCtx() {
+            if (!soundEnabled) return null;
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) audioCtx = new AudioContextClass();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('sound-icon');
+            const label = document.getElementById('sound-label');
+            if (soundEnabled) {
+                icon.className = 'fa-solid fa-volume-high text-amber-600';
+                label.textContent = '音效：開';
+                playPopSound(600);
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark text-stone-400';
+                label.textContent = '音效：關';
+            }
+        }
+
+        // 落糖「沙沙」聲
+        function playSugarPourSound() {
+            const ctx = ensureAudioCtx();
+            if (!ctx) return;
+            const bufferSize = ctx.sampleRate * 0.16;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.06));
+            }
+            const noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.value = 3200;
+
+            const gain = ctx.createGain();
+            gain.gain.value = 0.25;
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+            noise.start();
+        }
+
+        // 發酵冒泡泡「啵啵」聲
+        function playPopSound(baseFreq = 380) {
+            const ctx = ensureAudioCtx();
+            if (!ctx) return;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            const now = ctx.currentTime;
+            osc.frequency.setValueAtTime(baseFreq, now);
+            osc.frequency.exponentialRampToValueAtTime(baseFreq * 2.1, now + 0.09);
+
+            gain.gain.setValueAtTime(0.12, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.095);
+        }
+
+        // 篤軟綿綿麵糰「噗哧 + 彈Q」聲
+        function playSoftPokeSound() {
+            const ctx = ensureAudioCtx();
+            if (!ctx) return;
+            const now = ctx.currentTime;
+
+            // 1. 噗哧漏氣聲
+            const bufLen = ctx.sampleRate * 0.22;
+            const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+            const ch = buf.getChannelData(0);
+            for (let i = 0; i < bufLen; i++) {
+                ch[i] = (Math.random() * 2 - 1) * (1 - i / bufLen);
+            }
+            const noise = ctx.createBufferSource();
+            noise.buffer = buf;
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(900, now);
+            filter.frequency.linearRampToValueAtTime(250, now + 0.22);
+            const nGain = ctx.createGain();
+            nGain.gain.value = 0.35;
+            noise.connect(filter);
+            filter.connect(nGain);
+            nGain.connect(ctx.destination);
+            noise.start(now);
+
+            // 2. Q彈回彈音
+            const osc = ctx.createOscillator();
+            const oGain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(220, now);
+            osc.frequency.exponentialRampToValueAtTime(420, now + 0.15);
+            osc.frequency.exponentialRampToValueAtTime(290, now + 0.3);
+            oGain.gain.setValueAtTime(0.2, now);
+            oGain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            osc.connect(oGain);
+            oGain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.31);
+        }
+
+        // 篤實一實麵糰「咚」低沉聲
+        function playHardPokeSound() {
+            const ctx = ensureAudioCtx();
+            if (!ctx) return;
+            const now = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(135, now);
+            osc.frequency.exponentialRampToValueAtTime(55, now + 0.12);
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.005, now + 0.12);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.13);
+        }
+
+        // 焗爐叮噹聲
+        function playOvenDingSound() {
+            const ctx = ensureAudioCtx();
+            if (!ctx) return;
+            const now = ctx.currentTime;
+            [880, 1318.5].forEach((freq, idx) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+                gain.gain.setValueAtTime(0.22, now + idx * 0.12);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.65);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now + idx * 0.12);
+                osc.stop(now + idx * 0.12 + 0.66);
+            });
+        }
+
+        /******************************************************************
+         * 2. 核心狀態與發酵碗資料
+         ******************************************************************/
+        const BASE_CM = 3.0;
+        const MAX_CM = 12.0;
+        const TOTAL_MINS = 60;
+
+        let unlockedFourBowls = false; // 起初只顯示 2 碗 PK
+        let hasCompletedFirstRun = false;
+        let currentMins = 0;
+        let isPlaying = false;
+        let speedMultiplier = 2; // 預設 2x 快轉適合課堂節奏
+        let rafId = null;
+        let lastFrameTime = null;
+        let lastBubbleSoundTime = 0;
+
+        let crownBowlIdx = null;    // 皇冠貼紙貼喺邊個碗 (0 ~ 3)
+        let activeMagIdx = 0;       // 放大鏡睇緊邊個碗
+        let isBakedMode = false;    // 是否已焗成方包切面
+        let gasDiscovered = false;  // 是否已透過石灰水發現二氧化碳
+        let limewaterBubbled = false;
+
+        const bowlsData = [
+            { id: 1, name: '1號碗', spoons: 0, color: '#64748B', balloonHex: '#94A3B8', jitter: 0.92 },
+            { id: 2, name: '2號碗', spoons: 3, color: '#059669', balloonHex: '#34D399', jitter: 1.06 },
+            { id: 3, name: '3號碗', spoons: 1, color: '#0284C7', balloonHex: '#38BDF8', jitter: 0.98 },
+            { id: 4, name: '4號碗', spoons: 8, color: '#E11D48', balloonHex: '#FB7185', jitter: 1.04 }
+        ];
+
+        function getActiveBowls() {
+            return unlockedFourBowls ? bowlsData : bowlsData.slice(0, 2);
+        }
+
+        // 根據糖匙數計算 60 分鐘最大長高幅度
+        function getMaxRiseCm(spoons) {
+            const table = {
+                0: 1.2, // 4.2cm
+                1: 4.3, // 7.3cm
+                2: 6.6, // 9.6cm
+                3: 8.3, // 11.3cm (最高!)
+                4: 7.5, // 10.5cm
+                5: 5.2, // 8.2cm
+                6: 3.1, // 6.1cm
+                7: 1.8, // 4.8cm
+                8: 1.3  // 4.3cm (太甜脫水長唔高)
+            };
+            return table[spoons] !== undefined ? table[spoons] : 1.2;
+        }
+
+        function calcCurrentCm(spoons, mins) {
+            if (mins <= 0) return BASE_CM;
+            const maxAdd = getMaxRiseCm(spoons);
+            const k = spoons >= 6 ? 0.032 : (spoons >= 2 && spoons <= 4 ? 0.062 : 0.048);
+            const p = spoons >= 6 ? 1.5 : 1.25;
+            const ratio = 1 - Math.exp(-Math.pow(k * mins, p));
+            return BASE_CM + maxAdd * ratio;
+        }
+
+        function getGasName() {
+            return gasDiscovered ? '二氧化碳 CO₂' : '神秘氣體 ❓';
+        }
+
+        /******************************************************************
+         * 3. 渲染工作檯上嘅發酵碗 (支援 2 碗 或 4 碗、皇冠貼紙、篤麵糰、方包切面)
+         ******************************************************************/
+        function renderWorkbenchBowls() {
+            const grid = document.getElementById('workbench-bowls-grid');
+            const activeList = getActiveBowls();
+
+            if (unlockedFourBowls) {
+                grid.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-7xl mx-auto transition-all duration-300';
+            } else {
+                grid.className = 'grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-3xl mx-auto transition-all duration-300';
+            }
+
+            grid.innerHTML = activeList.map((b, idx) => {
+                const hasCrown = crownBowlIdx === idx;
+                const isMagTarget = activeMagIdx === idx;
+
+                return `
+                <div id="bowl-unit-${idx}"
+                     ondragover="event.preventDefault()"
+                     ondrop="onCrownDrop(event, ${idx})"
+                     class="bg-[#FFFDF9]/95 rounded-3xl border-4 transition-all p-3.5 flex flex-col justify-between relative shadow-lg ${isMagTarget ? 'border-amber-600 ring-4 ring-amber-300/60' : 'border-[#C8965A]'}">
+
+                    <!-- 頂部：碗名 + 皇冠貼紙位置 + 放大鏡掣 -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-white font-black text-xs px-2.5 py-1 rounded-full shadow-sm" style="background:${b.color}">
+                                    ${b.name}
+                                </span>
+                                <!-- 貼上皇冠貼紙按鈕/顯示 -->
+                                <button onclick="placeCrownOnBowl(${idx})"
+                                        class="text-xs font-black px-2 py-0.5 rounded-full border transition ${hasCrown ? 'bg-yellow-300 border-amber-700 text-amber-950 scale-105 shadow' : 'bg-stone-100 border-stone-300 text-stone-500 hover:bg-yellow-100'}"
+                                        title="貼皇冠貼紙落呢碗">
+                                    ${hasCrown ? '👑 我估最高！' : '👑 貼皇冠'}
+                                </button>
+                            </div>
+
+                            <button onclick="selectMagnifierBowl(${idx})"
+                                    class="tactile-btn bg-amber-100 hover:bg-amber-200 text-amber-950 border border-amber-400 font-black text-xs px-2.5 py-1 rounded-xl flex items-center gap-1">
+                                🔍 放大睇
+                            </button>
+                        </div>
+
+                        <!-- 加減糖匙控制列 -->
+                        <div class="bg-[#FFF5D6] border-2 border-[#E2B877] rounded-2xl p-2 mb-2.5 flex items-center justify-between">
+                            <button onclick="adjustSugar(${idx}, -1)" class="tactile-btn bg-white hover:bg-stone-100 text-stone-700 border border-stone-300 font-black w-8 h-8 rounded-xl text-sm flex items-center justify-center">
+                                <i class="fa-solid fa-minus"></i>
+                            </button>
+                            <div class="text-center">
+                                <span class="text-xs font-bold text-stone-600">糖量：</span>
+                                <span id="spoon-label-${idx}" class="text-sm sm:text-base font-black text-[#D9531E]">${b.spoons} 匙糖</span>
+                            </div>
+                            <button onclick="adjustSugar(${idx}, 1)" class="tactile-btn bg-gradient-to-b from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white border border-orange-700 font-black px-2.5 h-8 rounded-xl text-xs flex items-center gap-1 shadow-sm">
+                                <span>🥄+落糖</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 中央：氣球 + 玻璃量杯 + 擬人化麵糰 / 焗好方包切面 -->
+                    <div class="relative flex flex-col items-center pt-1 pb-2 bg-gradient-to-b from-stone-100/70 to-amber-50/50 rounded-2xl border border-stone-200 overflow-hidden">
+                        
+                        <!-- 糖粒掉落動畫區 -->
+                        <div id="sugar-fall-box-${idx}" class="absolute inset-0 pointer-events-none overflow-hidden z-40"></div>
+
+                        <!-- 發酵完成後皇冠比對結果標籤 -->
+                        <div id="crown-result-badge-${idx}" class="hidden absolute top-1.5 left-2 z-30 text-[11px] font-black px-2 py-0.5 rounded-full shadow"></div>
+
+                        <!-- 篤麵糰彈性回饋氣泡標籤 -->
+                        <div id="poke-feedback-pill-${idx}" class="hidden absolute top-20 z-40 bg-amber-950 text-amber-100 text-xs font-black px-3 py-1 rounded-full shadow-lg pointer-events-none"></div>
+
+                        <!-- 頂部氣球 -->
+                        <div class="h-20 w-full flex flex-col items-center justify-end relative mb-0.5">
+                            <div id="balloon-wrap-${idx}" class="origin-bottom transition-transform duration-200 flex flex-col items-center" style="transform: scale(0.35);">
+                                <div class="w-16 h-20 rounded-full flex items-center justify-center shadow-md relative px-1 text-center"
+                                     style="background: radial-gradient(circle at 30% 30%, #ffffff 0%, ${b.balloonHex} 55%, ${b.color} 100%); border-radius: 50% 50% 46% 46% / 55% 55% 45% 45%;">
+                                    <span id="balloon-gas-text-${idx}" class="text-white font-black text-[10px] leading-tight drop-shadow">${getGasName()}</span>
+                                </div>
+                                <div class="w-3 h-2 -mt-0.5 rounded-b-sm" style="background-color: ${b.color};"></div>
+                            </div>
+                        </div>
+
+                        <!-- 透明發酵碗 (高 200px 對應 0 ~ 12cm) -->
+                        <div onclick="onDoughClicked(${idx})"
+                             class="cursor-pointer relative w-40 h-[200px] rounded-b-3xl border-x-4 border-b-4 border-stone-400/80 bg-white/70 shadow-inner overflow-hidden flex flex-col justify-end group"
+                             title="發酵完可以篤下個麵糰！">
+                            
+                            <!-- 刻度尺 -->
+                            <div class="absolute inset-0 pointer-events-none z-20 flex flex-col justify-between py-2 px-2 text-[10px] font-black text-stone-400">
+                                <div class="flex justify-between"><span>12cm</span><span class="w-2 border-t-2 border-stone-400"></span></div>
+                                <div class="flex justify-between"><span>9cm</span><span class="w-2 border-t-2 border-stone-400"></span></div>
+                                <div class="flex justify-between"><span>6cm</span><span class="w-2 border-t-2 border-stone-400"></span></div>
+                                <div class="flex justify-between text-amber-800"><span class="bg-amber-100/90 px-1 rounded">3cm</span><span class="w-3 border-t-2 border-amber-700"></span></div>
+                            </div>
+
+                            <!-- 碗底未溶白糖層 (6匙以上明顯見到) -->
+                            <div id="sugar-bottom-layer-${idx}" class="absolute bottom-0 inset-x-0 bg-white/95 border-t border-stone-300 z-20 transition-all duration-300 pointer-events-none flex items-center justify-center overflow-hidden" style="height:0px;">
+                                <span class="text-[9px] font-black text-stone-500">・・滿滿白糖・・</span>
+                            </div>
+
+                            <!-- 生麵糰元素 (未入焗爐時顯示) -->
+                            <div id="dough-el-${idx}" class="dough-body relative w-full z-10 flex flex-col items-center justify-start pt-1.5 overflow-hidden" style="height: 25%;">
+                                <div id="puff-burst-zone-${idx}" class="absolute inset-0 pointer-events-none"></div>
+                                <div id="dough-face-${idx}" class="z-20 pointer-events-none"></div>
+                                <div id="dough-bubbles-${idx}" class="absolute inset-0 w-full h-full pointer-events-none"></div>
+                            </div>
+
+                            <!-- 焗好嘅方包切面 (入爐焗完後顯示) -->
+                            <div id="bread-slice-el-${idx}" class="hidden relative w-full z-20 flex-col items-center justify-end p-1.5">
+                                <!-- 由 JS 根據糖量渲染方包切面 SVG -->
+                            </div>
+                        </div>
+
+                        <!-- 底部簡短狀態列 -->
+                        <div class="mt-2 w-full px-2 flex items-center justify-between text-xs font-black">
+                            <span id="bowl-short-mood-${idx}" class="text-stone-700 truncate">準備發酵</span>
+                            <span id="bowl-cm-badge-${idx}" class="bg-amber-100 text-amber-950 border border-amber-400 px-2 py-0.5 rounded-lg shrink-0">
+                                3.0 cm
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+
+            activeList.forEach((_, idx) => initBowlBubbles(idx));
+            renderMagnifierTabs();
+            updateAllBowlVisuals();
+        }
+
+        function initBowlBubbles(idx) {
+            const box = document.getElementById(`dough-bubbles-${idx}`);
+            if (!box) return;
+            let html = '';
+            // 加入隨機大小、位置同延遲，避免四個碗似複製貼上
+            for (let i = 0; i < 15; i++) {
+                const sz = 5 + Math.floor(Math.random() * 9);
+                const left = 8 + Math.floor(Math.random() * 82);
+                const delay = (Math.random() * 2.1).toFixed(2);
+                html += `<div class="gas-bubble" style="width:${sz}px; height:${sz}px; left:${left}%; animation-delay:${delay}s; display:none;"></div>`;
+            }
+            box.innerHTML = html;
+        }
+
+        /******************************************************************
+         * 4. 皇冠貼紙拖放 / 點擊互動 & 發酵後視覺比對
+         ******************************************************************/
+        function onCrownDragStart(e) {
+            e.dataTransfer.setData('text/plain', 'crown');
+        }
+
+        function onCrownDrop(e, bowlIdx) {
+            e.preventDefault();
+            placeCrownOnBowl(bowlIdx);
+        }
+
+        function cycleCrownBowl() {
+            const len = getActiveBowls().length;
+            const next = crownBowlIdx === null ? 0 : (crownBowlIdx + 1) % len;
+            placeCrownOnBowl(next);
+        }
+
+        function placeCrownOnBowl(bowlIdx) {
+            crownBowlIdx = bowlIdx;
+            playPopSound(520);
+            const b = bowlsData[bowlIdx];
+            document.getElementById('crown-hint-text').textContent = `👑 已貼喺「${b.name} (${b.spoons}匙糖)」！撳「開始發酵」睇下估中無！`;
+            renderWorkbenchBowls();
+        }
+
+        /******************************************************************
+         * 5. 加減糖匙 + 掉落糖粒動畫
+         ******************************************************************/
+        function adjustSugar(idx, delta) {
+            if (isBakedMode) isBakedMode = false; // 改糖量自動返回生麵糰模式
+            const b = bowlsData[idx];
+            const next = Math.max(0, Math.min(8, b.spoons + delta));
+            if (next === b.spoons && delta !== 0) return;
+
+            b.spoons = next;
+            const label = document.getElementById(`spoon-label-${idx}`);
+            if (label) label.textContent = `${b.spoons} 匙糖`;
+
+            if (delta > 0) {
+                playSugarPourSound();
+                spawnFallingSugar(idx);
+            } else {
+                playPopSound(300);
+            }
+
+            activeMagIdx = idx;
+            updateAllBowlVisuals();
+        }
+
+        function spawnFallingSugar(idx) {
+            const zone = document.getElementById(`sugar-fall-box-${idx}`);
+            if (!zone) return;
+            for (let i = 0; i < 8; i++) {
+                const c = document.createElement('div');
+                c.className = 'sugar-crystal';
+                c.style.left = `${30 + Math.random() * 40}%`;
+                c.style.animationDelay = `${(Math.random() * 0.16).toFixed(2)}s`;
+                zone.appendChild(c);
+                setTimeout(() => c.remove(), 650);
+            }
+        }
+
+        /******************************************************************
+         * 6. 篤麵糰互動（軟綿綿噗哧漏氣 vs 實一實） & 入爐焗方包切面
+         ******************************************************************/
+        function onDoughClicked(idx) {
+            // 同時切換放大鏡到呢一碗
+            selectMagnifierBowl(idx);
+
+            // 如果已經發酵超過 20 分鐘（特別係 60 分鐘完成後），篤麵糰會有真實觸感回饋！
+            if (currentMins < 15 || isBakedMode) return;
+
+            const b = bowlsData[idx];
+            const doughEl = document.getElementById(`dough-el-${idx}`);
+            const pill = document.getElementById(`poke-feedback-pill-${idx}`);
+            if (!doughEl || !pill) return;
+
+            doughEl.classList.remove('anim-poke-soft', 'anim-poke-hard');
+            void doughEl.offsetWidth; // trigger reflow
+
+            pill.classList.remove('hidden');
+
+            if (b.spoons >= 2 && b.spoons <= 5) {
+                // 脹卜卜軟綿綿！
+                doughEl.classList.add('anim-poke-soft');
+                playSoftPokeSound();
+                pill.textContent = '💨 噗哧！軟綿綿好有彈性！';
+                pill.className = 'absolute top-20 z-40 bg-emerald-700 text-white text-xs font-black px-3 py-1 rounded-full shadow-lg pointer-events-none';
+                spawnPuffBurst(idx);
+            } else {
+                // 0匙 或 7-8匙：實一實硬邦邦
+                doughEl.classList.add('anim-poke-hard');
+                playHardPokeSound();
+                pill.textContent = '🪨 實一實！無乜氣泡彈性';
+                pill.className = 'absolute top-20 z-40 bg-stone-800 text-amber-200 text-xs font-black px-3 py-1 rounded-full shadow-lg pointer-events-none';
+            }
+
+            setTimeout(() => {
+                pill.classList.add('hidden');
+            }, 1400);
+        }
+
+        function spawnPuffBurst(idx) {
+            const zone = document.getElementById(`puff-burst-zone-${idx}`);
+            if (!zone) return;
+            for (let i = 0; i < 6; i++) {
+                const p = document.createElement('div');
+                p.className = 'puff-particle';
+                const tx = (Math.random() - 0.5) * 90;
+                p.style.setProperty('--tx', `${tx}px`);
+                zone.appendChild(p);
+                setTimeout(() => p.remove(), 700);
+            }
+        }
+
+        // 🔥 送入焗爐焗方包 (3秒烘烤動畫 -> 變方包切面)
+        function bakeBreadInOven() {
+            if (currentMins < TOTAL_MINS) return;
+            const overlay = document.getElementById('oven-overlay');
+            overlay.classList.remove('hidden');
+            playPopSound(440);
+
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                isBakedMode = true;
+                playOvenDingSound();
+                updateAllBowlVisuals();
+                document.getElementById('post-ferment-msg').textContent = '🍞 方包出爐喇！睇下唔同糖量焗出嚟嘅「氣孔」同「外皮顏色」有咩分別！';
+            }, 2600);
+        }
+
+        // 生成方包切面 SVG (0匙扁平無氣孔、3匙鬆軟多氣孔、8匙表面燶黑入面實心)
+        function getBreadSliceSvg(spoons) {
+            if (spoons === 0) {
+                return `
+                <div class="text-center w-full">
+                    <svg viewBox="0 0 140 85" class="w-32 h-20 mx-auto drop-shadow">
+                        <!-- 扁平硬餅乾切面 (無氣孔) -->
+                        <rect x="14" y="42" width="112" height="36" rx="10" fill="#E6CCB2" stroke="#B08968" stroke-width="4"/>
+                        <rect x="20" y="47" width="100" height="26" rx="6" fill="#F5EBE0"/>
+                        <text x="70" y="64" text-anchor="middle" font-size="11" font-weight="900" fill="#7F5539">扁平、無氣孔</text>
+                    </svg>
+                    <span class="bg-stone-200 text-stone-800 text-[11px] font-black px-2 py-0.5 rounded-md">實一實似餅乾</span>
+                </div>`;
+            } else if (spoons >= 1 && spoons <= 2) {
+                return `
+                <div class="text-center w-full">
+                    <svg viewBox="0 0 140 120" class="w-32 h-28 mx-auto drop-shadow">
+                        <path d="M 20 110 L 20 48 Q 14 25 70 25 Q 126 25 120 48 L 120 110 Z" fill="#FDE68A" stroke="#D97706" stroke-width="4.5"/>
+                        <circle cx="48" cy="65" r="4" fill="#D97706" opacity="0.45"/>
+                        <circle cx="85" cy="58" r="5" fill="#D97706" opacity="0.45"/>
+                        <circle cx="66" cy="85" r="4.5" fill="#D97706" opacity="0.45"/>
+                        <circle cx="92" cy="88" r="3.5" fill="#D97706" opacity="0.45"/>
+                    </svg>
+                    <span class="bg-sky-100 text-sky-900 text-[11px] font-black px-2 py-0.5 rounded-md">微脹、少量氣孔</span>
+                </div>`;
+            } else if (spoons >= 3 && spoons <= 5) {
+                return `
+                <div class="text-center w-full">
+                    <svg viewBox="0 0 140 155" class="w-32 h-36 mx-auto drop-shadow-md">
+                        <!-- 金黃高身鬆軟方包切面 -->
+                        <path d="M 16 146 L 16 52 Q 6 14 70 14 Q 134 14 124 52 L 124 146 Z" fill="#FEF3C7" stroke="#D97706" stroke-width="5"/>
+                        <!-- 滿滿漂亮氣孔 -->
+                        <ellipse cx="42" cy="48" rx="7" ry="5" fill="#F59E0B" opacity="0.45"/>
+                        <ellipse cx="75" cy="42" rx="9" ry="6" fill="#F59E0B" opacity="0.45"/>
+                        <ellipse cx="100" cy="54" rx="6" ry="5" fill="#F59E0B" opacity="0.45"/>
+                        <ellipse cx="52" cy="76" rx="8" ry="6" fill="#F59E0B" opacity="0.45"/>
+                        <ellipse cx="88" cy="80" rx="10" ry="7" fill="#F59E0B" opacity="0.45"/>
+                        <ellipse cx="38" cy="108" rx="7" ry="5" fill="#F59E0B" opacity="0.45"/>
+                        <ellipse cx="70" cy="112" rx="9" ry="7" fill="#F59E0B" opacity="0.45"/>
+                        <ellipse cx="102" cy="115" rx="6" ry="6" fill="#F59E0B" opacity="0.45"/>
+                    </svg>
+                    <span class="bg-emerald-100 text-emerald-950 text-[11px] font-black px-2 py-0.5 rounded-md">✨ 鬆軟脹卜卜、滿滿氣孔！</span>
+                </div>`;
+            } else {
+                // 6-8匙糖：剩太多糖導致表面烤燶（焦黑）、入面矮實無氣孔
+                return `
+                <div class="text-center w-full">
+                    <svg viewBox="0 0 140 95" class="w-32 h-24 mx-auto drop-shadow">
+                        <!-- 表面焦黑外皮 + 矮實心切面 -->
+                        <path d="M 15 86 L 15 52 Q 15 34 70 34 Q 125 34 125 52 L 125 86 Z" fill="#D4A373" stroke="#29170B" stroke-width="6.5"/>
+                        <path d="M 15 52 Q 15 34 70 34 Q 125 34 125 52" fill="none" stroke="#1C0F07" stroke-width="8"/>
+                        <text x="70" y="68" text-anchor="middle" font-size="11" font-weight="900" fill="#3E2723">表面燶咗、入面實心</text>
+                    </svg>
+                    <span class="bg-rose-100 text-rose-900 text-[11px] font-black px-2 py-0.5 rounded-md">🔥 剩太多糖易燶、無氣孔</span>
+                </div>`;
+            }
+        }
+
+        /******************************************************************
+         * 7. 更新所有視覺狀態 (麵糰表情、高度、氣球、放大鏡)
+         ******************************************************************/
+        function getMoodConfig(spoons, mins) {
+            const active = mins > 2;
+            if (spoons === 0) {
+                return { face: 'sleepy', text: active ? '無糖食瞓覺 💤' : '0匙：無糖', bubbles: active ? 2 : 0, speed: '3.4s' };
+            } else if (spoons <= 2) {
+                return { face: 'smile', text: active ? '慢慢吹氣泡 😊' : `${spoons}匙：微糖`, bubbles: active ? 6 : 0, speed: '2.1s' };
+            } else if (spoons <= 4) {
+                return { face: 'happy', text: active ? '脹卜卜狂吹氣 😆' : `${spoons}匙：適量糖`, bubbles: active ? 15 : 0, speed: '1.05s' };
+            } else if (spoons === 5) {
+                return { face: 'sweat', text: active ? '開始口渴 😅' : '5匙：偏甜', bubbles: active ? 5 : 0, speed: '2.4s' };
+            } else {
+                return { face: 'thirsty', text: active ? '太甜口渴無力 🥵' : `${spoons}匙：超多糖`, bubbles: active ? 2 : 0, speed: '3.6s' };
+            }
+        }
+
+        function renderFaceSvg(faceType) {
+            if (faceType === 'sleepy') {
+                return `<svg viewBox="0 0 90 38" class="w-16 h-8 mx-auto overflow-visible">
+                    <path d="M 18 18 Q 25 25 32 18" stroke="#5A3E2B" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+                    <path d="M 58 18 Q 65 25 72 18" stroke="#5A3E2B" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+                    <circle cx="45" cy="24" r="3.5" fill="#5A3E2B"/>
+                    <text x="68" y="10" font-size="11" font-weight="900" fill="#64748B">Zzz</text>
+                </svg>`;
+            } else if (faceType === 'smile') {
+                return `<svg viewBox="0 0 90 38" class="w-16 h-8 mx-auto">
+                    <circle cx="25" cy="16" r="4" fill="#5A3E2B"/>
+                    <circle cx="65" cy="16" r="4" fill="#5A3E2B"/>
+                    <path d="M 35 22 Q 45 31 55 22" stroke="#5A3E2B" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+                </svg>`;
+            } else if (faceType === 'happy') {
+                return `<svg viewBox="0 0 90 38" class="w-16 h-8 mx-auto">
+                    <path d="M 18 17 Q 25 9 32 17" stroke="#5A3E2B" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                    <path d="M 58 17 Q 65 9 72 17" stroke="#5A3E2B" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                    <path d="M 32 20 Q 45 36 58 20 Z" fill="#E11D48" stroke="#5A3E2B" stroke-width="2.5"/>
+                </svg>`;
+            } else {
+                return `<svg viewBox="0 0 90 38" class="w-16 h-8 mx-auto overflow-visible">
+                    <path d="M 18 12 L 29 18 L 18 24" stroke="#5A3E2B" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <path d="M 72 12 L 61 18 L 72 24" stroke="#5A3E2B" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <path d="M 32 27 Q 39 22 45 27 T 58 27" stroke="#5A3E2B" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <path d="M 78 6 C 78 6 83 13 83 16 A 3.5 3.5 0 1 1 73 16 C 73 13 78 6 78 6 Z" fill="#38BDF8"/>
+                </svg>`;
+            }
+        }
+
+        function updateAllBowlVisuals() {
+            document.getElementById('timer-min-text').textContent = Math.floor(currentMins);
+            document.getElementById('timer-bar-fill').style.width = `${(currentMins / TOTAL_MINS) * 100}%`;
+
+            const activeList = getActiveBowls();
+
+            // 找出目前最高嗰一碗 (用嚟喺 60 分鐘時同皇冠貼紙比對)
+            let maxCmVal = -1;
+            activeList.forEach(b => {
+                const c = calcCurrentCm(b.spoons, currentMins);
+                if (c > maxCmVal) maxCmVal = c;
+            });
+
+            activeList.forEach((b, idx) => {
+                const cm = calcCurrentCm(b.spoons, currentMins);
+                const heightPct = Math.min(95, (cm / MAX_CM) * 100);
+                const mood = getMoodConfig(b.spoons, currentMins);
+
+                const doughEl = document.getElementById(`dough-el-${idx}`);
+                const breadEl = document.getElementById(`bread-slice-el-${idx}`);
+
+                if (isBakedMode) {
+                    if (doughEl) doughEl.classList.add('hidden');
+                    if (breadEl) {
+                        breadEl.classList.remove('hidden');
+                        breadEl.classList.add('flex');
+                        breadEl.innerHTML = getBreadSliceSvg(b.spoons);
+                    }
+                } else {
+                    if (doughEl) {
+                        doughEl.classList.remove('hidden');
+                        doughEl.style.height = `${heightPct}%`;
+                        doughEl.classList.toggle('dough-thirsty', mood.face === 'thirsty');
+                    }
+                    if (breadEl) {
+                        breadEl.classList.add('hidden');
+                        breadEl.classList.remove('flex');
+                    }
+                }
+
+                // 碗底白糖堆積
+                const bottomSugar = document.getElementById(`sugar-bottom-layer-${idx}`);
+                if (bottomSugar) {
+                    bottomSugar.style.height = b.spoons >= 6 ? `${(b.spoons - 4) * 4}px` : '0px';
+                }
+
+                // 表情
+                const faceEl = document.getElementById(`dough-face-${idx}`);
+                if (faceEl) faceEl.innerHTML = renderFaceSvg(mood.face);
+
+                // 氣球大小與氣體名稱
+                const balloonWrap = document.getElementById(`balloon-wrap-${idx}`);
+                const balloonText = document.getElementById(`balloon-gas-text-${idx}`);
+                if (balloonWrap) {
+                    const growRatio = Math.max(0, (cm - BASE_CM) / 8.3);
+                    const sc = 0.35 + growRatio * 0.78;
+                    balloonWrap.style.transform = `scale(${sc.toFixed(2)})`;
+                }
+                if (balloonText) balloonText.textContent = getGasName();
+
+                // 泡泡動畫
+                const bubBox = document.getElementById(`dough-bubbles-${idx}`);
+                if (bubBox) {
+                    const bubs = bubBox.querySelectorAll('.gas-bubble');
+                    bubs.forEach((el, bIdx) => {
+                        if (bIdx < mood.bubbles && currentMins > 0 && !isBakedMode) {
+                            el.style.display = 'block';
+                            el.style.animationDuration = mood.speed;
+                            el.style.animationPlayState = isPlaying ? 'running' : 'paused';
+                        } else {
+                            el.style.display = 'none';
+                        }
+                    });
+                }
+
+                // 狀態與高度文字
+                const moodTxt = document.getElementById(`bowl-short-mood-${idx}`);
+                const cmBadge = document.getElementById(`bowl-cm-badge-${idx}`);
+                if (moodTxt) moodTxt.textContent = isBakedMode ? '🔥 已焗成方包' : mood.text;
+                if (cmBadge) cmBadge.textContent = `${cm.toFixed(1)} cm`;
+
+                // 60 分鐘完成時：視覺化比對「👑皇冠貼紙」同「實際最高」
+                const resBadge = document.getElementById(`crown-result-badge-${idx}`);
+                if (resBadge) {
+                    if (currentMins >= TOTAL_MINS) {
+                        const isTallest = Math.abs(cm - maxCmVal) < 0.15 && cm > 4.5;
+                        if (crownBowlIdx === idx && isTallest) {
+                            resBadge.classList.remove('hidden');
+                            resBadge.className = 'absolute top-1.5 left-2 z-30 bg-yellow-300 border-2 border-amber-700 text-amber-950 text-[11px] font-black px-2 py-0.5 rounded-full shadow animate-bounce';
+                            resBadge.textContent = '👑✨ 估中最高！';
+                        } else if (isTallest) {
+                            resBadge.classList.remove('hidden');
+                            resBadge.className = 'absolute top-1.5 left-2 z-30 bg-emerald-500 text-white text-[11px] font-black px-2 py-0.5 rounded-full shadow';
+                            resBadge.textContent = `🏆 全場最高 (${cm.toFixed(1)}cm)`;
+                        } else if (crownBowlIdx === idx && !isTallest) {
+                            resBadge.classList.remove('hidden');
+                            resBadge.className = 'absolute top-1.5 left-2 z-30 bg-rose-100 border border-rose-400 text-rose-900 text-[11px] font-black px-2 py-0.5 rounded-full shadow';
+                            resBadge.textContent = `👑 差 ${(maxCmVal - cm).toFixed(1)}cm 先最高`;
+                        } else {
+                            resBadge.classList.add('hidden');
+                        }
+                    } else {
+                        resBadge.classList.add('hidden');
+                    }
+                }
+            });
+
+            renderMagnifierContent();
+        }
+
+        /******************************************************************
+         * 8. 神奇放大鏡（酵母小精靈動態視覺：瞓覺 / 吹氣 / 水滴被糖吸走）
+         ******************************************************************/
+        function renderMagnifierTabs() {
+            const tabs = document.getElementById('mag-bowl-tabs');
+            if (!tabs) return;
+            const activeList = getActiveBowls();
+            if (activeMagIdx >= activeList.length) activeMagIdx = 0;
+
+            tabs.innerHTML = activeList.map((b, idx) => `
+                <button onclick="selectMagnifierBowl(${idx})"
+                        class="px-2.5 py-1 rounded-xl text-xs font-black border-2 transition ${idx === activeMagIdx ? 'bg-amber-600 text-white border-amber-800' : 'bg-amber-50 text-stone-700 border-amber-200 hover:bg-amber-100'}">
+                    ${b.name}(${b.spoons}匙)
+                </button>
+            `).join('');
+        }
+
+        function selectMagnifierBowl(idx) {
+            activeMagIdx = idx;
+            renderMagnifierTabs();
+            renderMagnifierContent();
+            // 更新碗外框高亮
+            getActiveBowls().forEach((_, i) => {
+                const card = document.getElementById(`bowl-unit-${i}`);
+                if (!card) return;
+                if (i === activeMagIdx) {
+                    card.classList.add('border-amber-600', 'ring-4', 'ring-amber-300/60');
+                    card.classList.remove('border-[#C8965A]');
+                } else {
+                    card.classList.remove('border-amber-600', 'ring-4', 'ring-amber-300/60');
+                    card.classList.add('border-[#C8965A]');
+                }
+            });
+        }
+
+        function renderMagnifierContent() {
+            const b = bowlsData[activeMagIdx];
+            if (!b) return;
+            const s = b.spoons;
+            const gasShort = gasDiscovered ? 'CO₂' : '❓氣體';
+
+            document.getElementById('mag-current-label').textContent = `🔍 ${b.name} (${s}匙糖)`;
+            const tag = document.getElementById('mag-condition-tag');
+            const stage = document.getElementById('mag-sprite-stage');
+            const cap = document.getElementById('mag-short-caption');
+
+            if (s === 0) {
+                tag.textContent = '無糖：肚餓瞓覺';
+                stage.innerHTML = `
+                    <svg width="150" height="105" viewBox="0 0 150 105">
+                        <circle cx="70" cy="56" r="34" fill="#FDE68A" stroke="#D97706" stroke-width="3.5"/>
+                        <path d="M 53 52 Q 60 58 67 52" stroke="#5A3E2B" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <path d="M 75 52 Q 82 58 89 52" stroke="#5A3E2B" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <circle cx="71" cy="66" r="3.5" fill="#5A3E2B"/>
+                        <text x="98" y="30" font-size="16" font-weight="900" fill="#64748B">Zzz...</text>
+                    </svg>
+                `;
+                cap.textContent = '😴 無加糖，小精靈肚餓無力吹氣泡！';
+            } else if (s <= 2) {
+                tag.textContent = '微糖：慢慢吹氣';
+                stage.innerHTML = `
+                    <svg width="160" height="105" viewBox="0 0 160 105">
+                        <circle cx="65" cy="56" r="34" fill="#FCD34D" stroke="#D97706" stroke-width="3.5"/>
+                        <circle cx="54" cy="48" r="3.5" fill="#5A3E2B"/>
+                        <circle cx="76" cy="48" r="3.5" fill="#5A3E2B"/>
+                        <path d="M 56 62 Q 65 70 74 62" stroke="#5A3E2B" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <circle cx="115" cy="42" r="12" fill="#FFFFFF" stroke="#0284C7" stroke-width="2"/>
+                        <text x="115" y="46" text-anchor="middle" font-size="8" font-weight="900" fill="#0284C7">${gasShort}</text>
+                    </svg>
+                `;
+                cap.textContent = '😊 食少少糖，吹出適量氣泡慢慢長高。';
+            } else if (s <= 5) {
+                tag.textContent = '適量糖：活力全開！';
+                stage.innerHTML = `
+                    <svg width="180" height="105" viewBox="0 0 180 105">
+                        <circle cx="58" cy="58" r="33" fill="#FBBF24" stroke="#B45309" stroke-width="3.5"/>
+                        <circle cx="92" cy="36" r="18" fill="#FDE68A" stroke="#B45309" stroke-width="3"/>
+                        <path d="M 42 49 Q 48 41 54 49" stroke="#5A3E2B" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <path d="M 62 49 Q 68 41 74 49" stroke="#5A3E2B" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <circle cx="58" cy="63" r="8" fill="#E11D48"/>
+                        <!-- 大量氣泡 -->
+                        <circle cx="132" cy="64" r="13" fill="#FFFFFF" stroke="#059669" stroke-width="2.5"/>
+                        <text x="132" y="68" text-anchor="middle" font-size="8" font-weight="900" fill="#059669">${gasShort}</text>
+                        <circle cx="152" cy="34" r="14" fill="#FFFFFF" stroke="#059669" stroke-width="2.5"/>
+                        <text x="152" y="38" text-anchor="middle" font-size="8" font-weight="900" fill="#059669">${gasShort}</text>
+                    </svg>
+                `;
+                cap.textContent = '🥳 糖份啱啱好！狂吹氣泡令麵糰最脹卜卜！';
+            } else {
+                // 6-8匙超多糖：清晰動畫顯示「藍色水滴💧由酵母小精靈體內被周圍白糖晶體吸走」
+                tag.textContent = '超多糖：水份被吸走！';
+                stage.innerHTML = `
+                    <svg width="190" height="108" viewBox="0 0 190 108">
+                        <!-- 四周滿滿嘅白糖粒晶體 -->
+                        <g fill="#FFFFFF" stroke="#64748B" stroke-width="2">
+                            <rect x="8" y="20" width="18" height="18" rx="3"/>
+                            <text x="17" y="33" text-anchor="middle" font-size="9" font-weight="900" fill="#334155" stroke="none">糖</text>
+                            <rect x="12" y="68" width="18" height="18" rx="3"/>
+                            <text x="21" y="81" text-anchor="middle" font-size="9" font-weight="900" fill="#334155" stroke="none">糖</text>
+                            <rect x="158" y="20" width="18" height="18" rx="3"/>
+                            <text x="167" y="33" text-anchor="middle" font-size="9" font-weight="900" fill="#334155" stroke="none">糖</text>
+                            <rect x="154" y="68" width="18" height="18" rx="3"/>
+                            <text x="163" y="81" text-anchor="middle" font-size="9" font-weight="900" fill="#334155" stroke="none">糖</text>
+                        </g>
+
+                        <!-- 皺縮乾扁嘅酵母小精靈 -->
+                        <path d="M 65 34 Q 95 26 118 36 Q 126 56 116 78 Q 92 86 66 78 Q 54 56 65 34 Z" fill="#E5C878" stroke="#B45309" stroke-width="3.5"/>
+                        <path d="M 72 48 L 82 54 L 72 60" stroke="#5A3E2B" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+                        <path d="M 108 48 L 98 54 L 108 60" stroke="#5A3E2B" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+                        <path d="M 80 68 Q 90 63 100 68" stroke="#5A3E2B" stroke-width="2.8" fill="none"/>
+
+                        <!-- 動態水滴由小精靈體內被吸去糖粒 (視覺關鍵線索！) -->
+                        <g class="water-drop-suck" style="--wx: -42px; --wy: -18px;">
+                            <circle cx="62" cy="45" r="6" fill="#38BDF8" stroke="#0284C7" stroke-width="1.5"/>
+                            <text x="62" y="48" text-anchor="middle" font-size="7" font-weight="900" fill="#FFF">水</text>
+                        </g>
+                        <g class="water-drop-suck" style="--wx: -38px; --wy: 18px; animation-delay: 0.35s;">
+                            <circle cx="62" cy="65" r="6" fill="#38BDF8" stroke="#0284C7" stroke-width="1.5"/>
+                            <text x="62" y="68" text-anchor="middle" font-size="7" font-weight="900" fill="#FFF">水</text>
+                        </g>
+                        <g class="water-drop-suck" style="--wx: 42px; --wy: -18px; animation-delay: 0.2s;">
+                            <circle cx="120" cy="45" r="6" fill="#38BDF8" stroke="#0284C7" stroke-width="1.5"/>
+                            <text x="120" y="48" text-anchor="middle" font-size="7" font-weight="900" fill="#FFF">水</text>
+                        </g>
+                        <g class="water-drop-suck" style="--wx: 38px; --wy: 18px; animation-delay: 0.55s;">
+                            <circle cx="120" cy="65" r="6" fill="#38BDF8" stroke="#0284C7" stroke-width="1.5"/>
+                            <text x="120" y="68" text-anchor="middle" font-size="7" font-weight="900" fill="#FFF">水</text>
+                        </g>
+                    </svg>
+                `;
+                cap.textContent = '🥵 太多糖吸走晒小精靈啲水份（💧➔🍬），口渴無力吹氣！';
+            }
+        }
+
+        /******************************************************************
+         * 9. 發酵計時器與解鎖 4 碗進階模式
+         ******************************************************************/
+        function toggleFermentation() {
+            ensureAudioCtx();
+            if (currentMins >= TOTAL_MINS) {
+                resetWorkbench();
+                isPlaying = true;
+            } else {
+                isPlaying = !isPlaying;
+            }
+            syncPlayButtons();
+
+            if (isPlaying) {
+                lastFrameTime = performance.now();
+                rafId = requestAnimationFrame(fermentLoop);
+            } else if (rafId) {
+                cancelAnimationFrame(rafId);
+            }
+            updateAllBowlVisuals();
+        }
+
+        function syncPlayButtons() {
+            const btn = document.getElementById('btn-start-ferment');
+            const icon = document.getElementById('play-btn-icon');
+            const txt = document.getElementById('play-btn-text');
+
+            if (isPlaying) {
+                btn.className = 'tactile-btn bg-amber-500 hover:bg-amber-600 text-white border-2 border-amber-800 font-black px-4 py-2 rounded-2xl text-sm sm:text-base flex items-center gap-1.5';
+                icon.className = 'fa-solid fa-pause';
+                txt.textContent = '暫停';
+            } else if (currentMins >= TOTAL_MINS) {
+                btn.className = 'tactile-btn bg-indigo-600 hover:bg-indigo-700 text-white border-2 border-indigo-900 font-black px-4 py-2 rounded-2xl text-sm sm:text-base flex items-center gap-1.5';
+                icon.className = 'fa-solid fa-rotate-right';
+                txt.textContent = '再發酵一次';
+            } else {
+                btn.className = 'tactile-btn bg-emerald-500 hover:bg-emerald-600 text-white border-2 border-emerald-800 font-black px-4 py-2 rounded-2xl text-sm sm:text-base flex items-center gap-1.5';
+                icon.className = 'fa-solid fa-play';
+                txt.textContent = currentMins > 0 ? '繼續發酵' : '開始發酵';
+            }
+        }
+
+        function toggleSpeed() {
+            speedMultiplier = speedMultiplier === 1 ? 2 : (speedMultiplier === 2 ? 4 : 1);
+            document.getElementById('speed-btn').textContent = `⚡ 速度：${speedMultiplier}x`;
+            playPopSound(500);
+        }
+
+        function resetWorkbench() {
+            isPlaying = false;
+            isBakedMode = false;
+            if (rafId) cancelAnimationFrame(rafId);
+            currentMins = 0;
+            document.getElementById('btn-bake-oven').disabled = true;
+            document.getElementById('post-ferment-bar').classList.add('hidden');
+            syncPlayButtons();
+            updateAllBowlVisuals();
+        }
+
+        function fermentLoop(now) {
+            if (!isPlaying) return;
+            const dt = (now - lastFrameTime) / 1000;
+            lastFrameTime = now;
+
+            currentMins = Math.min(TOTAL_MINS, currentMins + dt * 5 * speedMultiplier);
+
+            // 隨產氣速度播放輕快啵啵氣泡聲
+            if (now - lastBubbleSoundTime > (420 / speedMultiplier)) {
+                playPopSound(340 + Math.random() * 180);
+                lastBubbleSoundTime = now;
+            }
+
+            updateAllBowlVisuals();
+
+            if (currentMins >= TOTAL_MINS) {
+                isPlaying = false;
+                onFermentationFinished();
+                return;
+            }
+            rafId = requestAnimationFrame(fermentLoop);
+        }
+
+        function onFermentationFinished() {
+            syncPlayButtons();
+            playOvenDingSound();
+            document.getElementById('btn-bake-oven').disabled = false;
+            document.getElementById('post-ferment-bar').classList.remove('hidden');
+
+            // 第一次完成 2 碗觀察後，彈出王老師解鎖 4 碗挑戰
+            if (!unlockedFourBowls) {
+                hasCompletedFirstRun = true;
+                document.getElementById('unlock-4bowls-banner').classList.remove('hidden');
+            }
+            updateAllBowlVisuals();
+        }
+
+        function unlockAllFourBowls(setStandardFour) {
+            unlockedFourBowls = true;
+            if (setStandardFour) {
+                bowlsData[0].spoons = 0;
+                bowlsData[1].spoons = 1;
+                bowlsData[2].spoons = 3;
+                bowlsData[3].spoons = 8;
+            }
+            document.getElementById('unlock-4bowls-banner').classList.add('hidden');
+            document.getElementById('mode-indicator-text').textContent = '目前模式：4 碗全開進階實驗';
+            resetWorkbench();
+            renderWorkbenchBowls();
+            playOvenDingSound();
+        }
+
+        /******************************************************************
+         * 10. 王老師實驗室：澄清石灰水測試（發現氣體係二氧化碳）
+         ******************************************************************/
+        function bubbleGasIntoLimewater() {
+            ensureAudioCtx();
+            limewaterBubbled = true;
+
+            // 氣球縮細、試管冒氣泡、石灰水變乳白混濁
+            const balloonGrp = document.getElementById('lab-balloon-group');
+            const bubblesGrp = document.getElementById('limewater-bubbles');
+            const liquid = document.getElementById('limewater-liquid');
+            const tubeLabel = document.getElementById('limewater-tube-label');
+            const pill = document.getElementById('limewater-status-pill');
+
+            balloonGrp.style.transform = 'scale(0.65)';
+            bubblesGrp.classList.remove('hidden');
+
+            // 連續播放氣泡聲
+            for (let i = 0; i < 6; i++) {
+                setTimeout(() => playPopSound(300 + i * 35), i * 160);
+            }
+
+            setTimeout(() => {
+                // 變成乳白色混濁！
+                liquid.setAttribute('fill', 'rgba(241, 245, 249, 0.94)');
+                tubeLabel.textContent = '已變混濁 (乳白色)！';
+                pill.textContent = '石灰水已變混濁！';
+                pill.className = 'bg-amber-200 text-amber-950 border border-amber-500 text-xs font-black px-2.5 py-1 rounded-full';
+                document.getElementById('gas-quiz-box').classList.remove('opacity-60', 'pointer-events-none');
+            }, 600);
+
+            setTimeout(() => {
+                bubblesGrp.classList.add('hidden');
+            }, 1800);
+        }
+
+        function checkGasAnswer(choice) {
+            const fb = document.getElementById('gas-quiz-feedback');
+            const svgBox = document.getElementById('limewater-svg-box');
+            fb.classList.remove('hidden');
+
+            if (choice === 'CO2') {
+                gasDiscovered = true;
+                playOvenDingSound();
+                fb.className = 'mt-2 text-xs font-black px-2.5 py-1.5 rounded-xl bg-emerald-100 border border-emerald-400 text-emerald-950';
+                fb.textContent = '🎉 答啱喇！澄清石灰水變混濁，證明神秘氣體係「二氧化碳 (CO₂)」！';
+
+                // 同步更新全場氣球與頂部標籤
+                document.getElementById('gas-top-badge').textContent = '氣球入面：二氧化碳 (CO₂) ✅';
+                document.getElementById('gas-top-badge').className = 'bg-emerald-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-sm';
+                document.getElementById('lab-balloon-text').textContent = '二氧化碳';
+                updateAllBowlVisuals();
+            } else {
+                // 答錯：絕不直接講答案！自動閃爍變混濁嘅石灰水試管引導學生
+                playHardPokeSound();
+                svgBox.classList.remove('clue-highlight-flash');
+                void svgBox.offsetWidth;
+                svgBox.classList.add('clue-highlight-flash');
+
+                fb.className = 'mt-2 text-xs font-black px-2.5 py-1.5 rounded-xl bg-amber-100 border border-amber-400 text-amber-950';
+                fb.textContent = '🕵️ 望下閃緊嘅試管：邊種氣體會令「澄清石灰水變混濁」？再揀過！';
+            }
+        }
+
+        /******************************************************************
+         * 11. 底部小偵探考驗：選錯時自動閃爍工作檯視覺線索（不直接給答案）
+         ******************************************************************/
+        const solvedChallenges = { 1: false, 2: false };
+
+        function answerChallenge(qId, isRight, feedbackText) {
+            const fb = document.getElementById(`quiz-fb-${qId}`);
+            fb.classList.remove('hidden');
+
+            if (isRight) {
+                solvedChallenges[qId] = true;
+                playOvenDingSound();
+                fb.className = 'mt-2.5 p-2.5 rounded-xl text-xs font-black bg-emerald-100 border-2 border-emerald-400 text-emerald-950';
+                fb.textContent = feedbackText;
+            } else {
+                playHardPokeSound();
+                fb.className = 'mt-2.5 p-2.5 rounded-xl text-xs font-black bg-rose-100 border-2 border-rose-400 text-rose-950';
+                fb.textContent = `🕵️ 線索提示：${feedbackText}`;
+
+                // 視覺自動導航與高亮閃爍！
+                if (qId === 1) {
+                    // 自動幫學生將其中一碗設為 8 匙糖（如果無 8 匙碗），並打開放大鏡閃爍「水滴被糖吸走」動畫
+                    let highSugarIdx = getActiveBowls().findIndex(b => b.spoons >= 6);
+                    if (highSugarIdx === -1) {
+                        highSugarIdx = getActiveBowls().length - 1;
+                        bowlsData[highSugarIdx].spoons = 8;
+                        renderWorkbenchBowls();
+                    }
+                    selectMagnifierBowl(highSugarIdx);
+                    const magPanel = document.getElementById('magnifier-panel');
+                    magPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    magPanel.classList.remove('clue-highlight-flash');
+                    void magPanel.offsetWidth;
+                    magPanel.classList.add('clue-highlight-flash');
+                } else if (qId === 2) {
+                    // 自動閃爍 3 匙糖發酵碗 / 焗爐掣
+                    const targetBowl = document.getElementById('bowl-unit-1') || document.getElementById('bowl-unit-0');
+                    if (targetBowl) {
+                        targetBowl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        targetBowl.classList.remove('clue-highlight-flash');
+                        void targetBowl.offsetWidth;
+                        targetBowl.classList.add('clue-highlight-flash');
+                    }
+                }
+            }
+
+            const count = (solvedChallenges[1] ? 1 : 0) + (solvedChallenges[2] ? 1 : 0);
+            document.getElementById('challenge-score-pill').textContent = `過關：${count} / 2`;
+        }
+
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // 初始化工作檯
+        window.addEventListener('DOMContentLoaded', () => {
+            renderWorkbenchBowls();
+        });
+    </script>
+</body>
+</html>
