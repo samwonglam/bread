@@ -79,7 +79,7 @@
     }
 
     button:disabled {
-      opacity: 0.35;
+      opacity: 0.45;
       cursor: not-allowed;
     }
 
@@ -89,7 +89,7 @@
     .btn-success { background: var(--success); color: #fff; }
     .btn-outline { background: #fff; color: var(--text-main); border: 1.5px solid #cbd5e0; }
 
-    /* 步驟面板：預設隱藏/鎖定，依序顯示 */
+    /* 階段步驟面板通用樣式 */
     .step-section {
       background: var(--bg-panel);
       border: 2px solid var(--border-wood);
@@ -97,17 +97,14 @@
       padding: 20px;
       margin-bottom: 18px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      display: none; /* 預設全部隱藏，透過 JS 逐一解鎖展開 */
+      transition: all 0.3s ease;
     }
 
-    .step-section.active {
-      display: block;
-      animation: fadeIn 0.4s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    .step-section.locked {
+      opacity: 0.45;
+      pointer-events: none;
+      filter: grayscale(40%);
+      border-color: #cbd5e0;
     }
 
     .step-header {
@@ -137,6 +134,7 @@
       border: 1px solid #90cdf4;
     }
 
+    /* 學生輸入與文字回饋框 */
     .input-group {
       margin-top: 12px;
       display: flex;
@@ -161,6 +159,12 @@
       background: #fff;
     }
 
+    textarea:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.15);
+    }
+
     .feedback-box {
       margin-top: 10px;
       padding: 10px 12px;
@@ -172,10 +176,10 @@
     .feedback-box.ok { background: #f0fff4; border-left: 4px solid #38a169; color: #22543d; }
     .feedback-box.warn { background: #fffaf0; border-left: 4px solid #dd6b20; color: #7b341e; }
 
-    /* 階段一：公平測試設計 */
+    /* 步驟一：公平測試設計 */
     .fair-test-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 14px;
     }
 
@@ -210,30 +214,7 @@
     .opt-btn.correct { background: #f0fff4; border-color: #38a169; color: #22543d; font-weight: bold; }
     .opt-btn.wrong { background: #fff5f5; border-color: #e53e3e; color: #742a2a; }
 
-    /* 多選題樣式 */
-    .checkbox-list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      font-size: 0.88rem;
-    }
-    .checkbox-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: #fff;
-      border: 1.5px solid #cbd5e0;
-      padding: 6px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .checkbox-item input {
-      width: 16px;
-      height: 16px;
-      accent-color: var(--primary);
-    }
-
-    /* 階段三：實驗木桌工作檯 */
+    /* 步驟三：實驗木桌工作檯 */
     .workbench {
       background: linear-gradient(180deg, #f9f3eb 0%, #DFC3A5 82%, #c49a6c 82%, #a67c52 100%);
       border: 2px solid var(--border-wood);
@@ -351,6 +332,21 @@
     }
     .ruler span { border-bottom: 1px solid #a0aec0; padding-right: 2px; }
 
+    .sugar-drop {
+      position: absolute;
+      top: 10px;
+      width: 5px;
+      height: 5px;
+      background: #fff;
+      border: 1px solid #cbd5e0;
+      animation: fall 0.4s ease-in forwards;
+      z-index: 5;
+    }
+    @keyframes fall {
+      from { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(100px); opacity: 0; }
+    }
+
     .dough {
       width: 100%;
       height: 40px;
@@ -358,9 +354,11 @@
       border-top: 3px solid #d69e2e;
       border-radius: 18px 18px 18px 18px;
       position: relative;
-      transition: height 0.3s ease-out;
+      transition: height 0.3s ease-out, transform 0.15s;
       cursor: pointer;
     }
+    .dough.poke-soft { transform: scaleY(0.82) scaleX(1.06); }
+    .dough.poke-hard { transform: scaleY(0.96); }
 
     .pore {
       position: absolute;
@@ -405,6 +403,7 @@
     .height-readout { font-weight: bold; color: #2b6cb0; }
     .poke-msg { min-height: 18px; color: #744210; font-size: 0.78rem; font-weight: 600; }
 
+    /* 步驟四：筆記與溫習 */
     .notes-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -430,7 +429,7 @@
   </header>
 
   <!-- ==================== 階段一：實驗設計與公平測試 ==================== -->
-  <section class="step-section active" id="step1Section">
+  <section class="step-section" id="step1Section">
     <div class="step-header">
       <div class="step-title"><span>📝 階段一：實驗設計與公平測試</span></div>
       <span class="step-badge" id="badge1">進行中</span>
@@ -441,42 +440,36 @@
     </p>
 
     <div class="fair-test-grid">
-      <!-- Q1 -->
       <div class="test-card">
-        <h3>1. 此實驗想探究甚麼因素？</h3>
-        <p style="font-size:0.84rem; color:#718096; margin-bottom:6px;">請選出本實驗主要想探究的變因：</p>
+        <h3>1. 變因選擇（獨立變因）</h3>
+        <p style="font-size:0.84rem; color:#718096; margin-bottom:6px;">在這項實驗中，我們唯一需要改變的條件（獨立變因）是什麼？</p>
         <div class="option-list">
-          <button class="opt-btn" onclick="checkFairQ1(this, false, '不對，水溫不是本實驗主要探究的因素。')">A. 水溫高低對發酵的影響</button>
-          <button class="opt-btn" onclick="checkFairQ1(this, true, '正確！本實驗主要想探究糖的分量對酵母發酵的影響。')">B. 糖的分量對發酵的影響</button>
-          <button class="opt-btn" onclick="checkFairQ1(this, false, '不對，酵母分量在各組中是固定不變的。')">C. 酵母分量對發酵的影響</button>
+          <button class="opt-btn" onclick="checkFairQ(1, this, false, '不對，水溫和酵母量在各碗中必須保持完全相同。')">A. 水溫和酵母分量</button>
+          <button class="opt-btn" onclick="checkFairQ(1, this, true, '正確！我們只改變「糖的分量」，其他條件保持一致。')">B. 糖的分量</button>
+          <button class="opt-btn" onclick="checkFairQ(1, this, false, '不對，麵粉分量是控制變因，不能改變。')">C. 麵粉分量</button>
         </div>
         <div class="feedback-box" id="fairHint1"></div>
       </div>
 
-      <!-- Q2 (多項選擇題) -->
       <div class="test-card">
-        <h3>2. 為了公平，以下哪一項必須保持不變？（可選多項）</h3>
-        <p style="font-size:0.84rem; color:#718096; margin-bottom:6px;">請勾選所有在實驗中需要保持不變（控制變因）的項目：</p>
-        <div class="checkbox-list">
-          <label class="checkbox-item"><input type="checkbox" id="cb-flour" value="flour"> 麵粉分量</label>
-          <label class="checkbox-item"><input type="checkbox" id="cb-water" value="water"> 水量與水溫</label>
-          <label class="checkbox-item"><input type="checkbox" id="cb-yeast" value="yeast"> 酵母分量</label>
-          <label class="checkbox-item"><input type="checkbox" id="cb-sugar" value="sugar"> 糖的分量（這是唯一要改變的）</label>
-        </div>
-        <div style="margin-top:10px;">
-          <button class="btn-primary" style="padding:6px 12px; font-size:0.85rem;" onclick="checkFairQ2Multi()">確認選擇</button>
+        <h3>2. 控制變因（保持不變）</h3>
+        <p style="font-size:0.84rem; color:#718096; margin-bottom:6px;">為了公平，以下哪一項<strong>必須保持不變</strong>？</p>
+        <div class="option-list">
+          <button class="opt-btn" onclick="checkFairQ(2, this, true, '正確！麵粉量、水量、水溫及酵母量都必須保持不變。')">A. 麵粉、水、酵母及水溫</button>
+          <button class="opt-btn" onclick="checkFairQ(2, this, false, '再想想：如果每碗水量不同，發酵情況就會受影響。')">B. 每一碗的水量可以隨意加</button>
+          <button class="opt-btn" onclick="checkFairQ(2, this, false, '再想想：酵母分量不同會令產氣速度出錯。')">C. 每一碗的酵母分量要不同</button>
         </div>
         <div class="feedback-box" id="fairHint2"></div>
       </div>
     </div>
 
     <div style="margin-top:16px; text-align:right;">
-      <button class="btn-primary" id="toStep2Btn" onclick="unlockStep(2)" disabled>完成階段一，進入下一個部分 ➡️</button>
+      <button class="btn-primary" id="toStep2Btn" onclick="unlockStep(2)" disabled>完成階段一，進入氣體檢驗 ➡️</button>
     </div>
   </section>
 
   <!-- ==================== 階段二：氣體檢驗（王老師石灰水測試） ==================== -->
-  <section class="step-section" id="step2Section">
+  <section class="step-section locked" id="step2Section">
     <div class="step-header">
       <div class="step-title"><span>🧪 階段二：氣體檢驗實驗（王老師石灰水測試）</span></div>
       <span class="step-badge" id="badge2">未解鎖</span>
@@ -496,6 +489,7 @@
           </g>
           <path d="M 50 115 L 50 135 L 120 135 L 120 25 L 215 25 L 215 115" fill="none" stroke="#718096" stroke-width="4.5" stroke-linecap="round"/>
           <path d="M 50 115 L 50 135 L 120 135 L 120 25 L 215 25 L 215 115" fill="none" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="5 5"/>
+          <!-- 試管 -->
           <rect x="195" y="32" width="40" height="108" rx="20" fill="none" stroke="#4a5568" stroke-width="3"/>
           <path id="s2Liquid" d="M 197 65 L 233 65 L 233 122 A 18 18 0 0 1 197 122 Z" fill="rgba(226, 232, 240, 0.4)" />
           <text x="250" y="75" fill="#2d3748" font-size="11" font-weight="bold" id="s2LimeText">澄清石灰水</text>
@@ -515,12 +509,12 @@
     </div>
 
     <div style="margin-top:16px; text-align:right;">
-      <button class="btn-primary" id="toStep3Btn" onclick="unlockStep(3)" disabled>完成階段二，進入下一個部分 ➡️</button>
+      <button class="btn-primary" id="toStep3Btn" onclick="unlockStep(3)" disabled>完成階段二，進入發酵實驗 ➡️</button>
     </div>
   </section>
 
   <!-- ==================== 階段三：糖的分量與酵母發酵實驗 ==================== -->
-  <section class="step-section" id="step3Section">
+  <section class="step-section locked" id="step3Section">
     <div class="step-header">
       <div class="step-title"><span>🥣 階段三：糖的分量與酵母發酵模擬實驗</span></div>
       <span class="step-badge" id="badge3">未解鎖</span>
@@ -563,12 +557,12 @@
     </div>
 
     <div style="margin-top:16px; text-align:right;">
-      <button class="btn-primary" id="toStep4Btn" onclick="unlockStep(4)" disabled>完成階段三，進入最後分析 ➡️</button>
+      <button class="btn-primary" id="toStep4Btn" onclick="unlockStep(4)" disabled>完成階段三，進入總結與分析 ➡️</button>
     </div>
   </section>
 
   <!-- ==================== 階段四：分析、小筆記與常犯錯誤 ==================== -->
-  <section class="step-section" id="step4Section">
+  <section class="step-section locked" id="step4Section">
     <div class="step-header">
       <div class="step-title"><span>📒 階段四：實驗數據分析與重點筆記</span></div>
       <span class="step-badge" id="badge4">未解鎖</span>
@@ -604,6 +598,7 @@
 </div>
 
 <script>
+  // 音效開關
   let soundEnabled = true;
   let audioCtx = null;
   function getAudioCtx() {
@@ -642,39 +637,41 @@
     document.getElementById('soundBtn').textContent = soundEnabled ? '🔊 音效：開' : '🔇 音效：關';
   }
 
-  // 解鎖步驟控制函數
+  // 步驟解鎖控制
+  let completedSteps = { 1: false, 2: false, 3: false };
+
   function unlockStep(stepNum) {
     if (stepNum === 2) {
+      completedSteps[1] = true;
       document.getElementById('badge1').textContent = '已完成 ✅';
-      const sec2 = document.getElementById('step2Section');
-      sec2.classList.add('active');
+      document.getElementById('step2Section').classList.remove('locked');
       document.getElementById('badge2').textContent = '進行中';
       document.getElementById('currentStepIndicator').textContent = '目前進度：階段二（氣體檢驗實驗）';
-      sec2.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('step2Section').scrollIntoView({ behavior: 'smooth' });
     } else if (stepNum === 3) {
+      completedSteps[2] = true;
       document.getElementById('badge2').textContent = '已完成 ✅';
-      const sec3 = document.getElementById('step3Section');
-      sec3.classList.add('active');
+      document.getElementById('step3Section').classList.remove('locked');
       document.getElementById('badge3').textContent = '進行中';
       document.getElementById('currentStepIndicator').textContent = '目前進度：階段三（糖的分量與酵母發酵實驗）';
-      sec3.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('step3Section').scrollIntoView({ behavior: 'smooth' });
       renderS3Bowls();
     } else if (stepNum === 4) {
+      completedSteps[3] = true;
       document.getElementById('badge3').textContent = '已完成 ✅';
-      const sec4 = document.getElementById('step4Section');
-      sec4.classList.add('active');
+      document.getElementById('step4Section').classList.remove('locked');
       document.getElementById('badge4').textContent = '進行中';
       document.getElementById('currentStepIndicator').textContent = '目前進度：階段四（分析與總結筆記）';
-      sec4.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('step4Section').scrollIntoView({ behavior: 'smooth' });
     }
   }
 
-  // 階段一：Q1 單選檢查
+  // 階段一：公平測試檢查
   let fairQ1Ok = false, fairQ2Ok = false;
-  function checkFairQ1(btnEl, isCorrect, msg) {
+  function checkFairQ(qNo, btnEl, isCorrect, msg) {
     const parent = btnEl.parentElement;
     parent.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('correct', 'wrong'));
-    const hint = document.getElementById('fairHint1');
+    const hint = document.getElementById(`fairHint${qNo}`);
     hint.classList.add('show');
 
     if (isCorrect) {
@@ -682,43 +679,17 @@
       btnEl.classList.add('correct');
       hint.className = 'feedback-box show ok';
       hint.textContent = `✅ ${msg}`;
-      fairQ1Ok = true;
+      if (qNo === 1) fairQ1Ok = true;
+      if (qNo === 2) fairQ2Ok = true;
     } else {
       playTone('pop');
       btnEl.classList.add('wrong');
       hint.className = 'feedback-box show warn';
       hint.textContent = `⚠️ ${msg}`;
-      fairQ1Ok = false;
+      if (qNo === 1) fairQ1Ok = false;
+      if (qNo === 2) fairQ2Ok = false;
     }
-    checkStep1Ready();
-  }
 
-  // 階段一：Q2 多選檢查
-  function checkFairQ2Multi() {
-    const flour = document.getElementById('cb-flour').checked;
-    const water = document.getElementById('cb-water').checked;
-    const yeast = document.getElementById('cb-yeast').checked;
-    const sugar = document.getElementById('cb-sugar').checked;
-
-    const hint = document.getElementById('fairHint2');
-    hint.classList.add('show');
-
-    // 正確答案：勾選 flour, water, yeast，且不勾選 sugar (因為sugar是改變的)
-    if (flour && water && yeast && !sugar) {
-      playTone('ding');
-      hint.className = 'feedback-box show ok';
-      hint.textContent = '✅ 回答正確！麵粉、水量與水溫、酵母分量都必須保持不變（控制變因），而糖的分量是我們要改變的。';
-      fairQ2Ok = true;
-    } else {
-      playTone('pop');
-      hint.className = 'feedback-box show warn';
-      hint.textContent = '⚠️ 提示：麵粉、水量與水溫、酵母分量都是要保持不變的控制變因；而「糖的分量」是我們要改變的變因，不應勾選。請再檢查一次！';
-      fairQ2Ok = false;
-    }
-    checkStep1Ready();
-  }
-
-  function checkStep1Ready() {
     if (fairQ1Ok && fairQ2Ok) {
       document.getElementById('toStep2Btn').disabled = false;
     }
@@ -753,7 +724,7 @@
     if (val.includes('混濁') || val.includes('乳白')) {
       playTone('ding');
       fb.className = 'feedback-box show ok';
-      fb.textContent = '✅ 觀察記錄正確！石灰水變混濁證明氣體是二氧化碳。您可以解鎖並進入下一個部分了！';
+      fb.textContent = '✅ 觀察記錄正確！石灰水變混濁證明氣體是二氧化碳。您可以前往下一步了！';
       document.getElementById('toStep3Btn').disabled = false;
     } else {
       playTone('pop');
@@ -821,7 +792,7 @@
             </div>
             <div class="cylinder">
               <div class="ruler"><span>10cm</span><span>6cm</span><span>3cm</span></div>
-              <div class="dough" style="height:${doughPx}px;">
+              <div class="dough" id="s3-dough-${i}" style="height:${doughPx}px;" onclick="pokeS3Dough(${i})">
                 ${poresHtml}
                 <div class="sugar-sediment" style="height:${sedimentPx}px;"></div>
               </div>
@@ -835,7 +806,7 @@
         </div>
         <div class="bowl-footer">
           <div class="height-readout">高度：${b.heightCm.toFixed(1)} cm</div>
-          <div class="poke-msg" id="s3-msg-${i}">${s3IsFinished && !s3IsBaked ? '👆 實驗完成' : ''}</div>
+          <div class="poke-msg" id="s3-msg-${i}">${s3IsFinished && !s3IsBaked ? '👆 篤下麵糰' : ''}</div>
         </div>
       `;
       grid.appendChild(card);
@@ -883,6 +854,15 @@
         renderS3Bowls();
       }
     }, 150);
+  }
+
+  function pokeS3Dough(idx) {
+    if (!s3IsFinished || s3IsBaked) return;
+    playTone('pop');
+    const msg = document.getElementById(`s3-msg-${idx}`);
+    const s = s3Bowls[idx].sugar;
+    if (s >= 2 && s <= 4) msg.textContent = '💨 噗哧！好鬆軟，有氣體！';
+    else msg.textContent = '🪨 實一實，氣體較少。';
   }
 
   function bakeS3Bread() {
@@ -933,7 +913,7 @@
     if (text.length > 10) {
       playTone('ding');
       fb.className = 'feedback-box show ok';
-      fb.textContent = '🎉 分析提交成功！您已經完全掌握了糖量對酵母發酵的影響與科學概念！';
+      fb.textContent = '🎉 分析提交成功！您已經完全掌握了糖量對酵母發酵的影響與滲透壓科學概念！';
     } else {
       playTone('pop');
       fb.className = 'feedback-box show warn';
